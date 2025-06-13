@@ -36,7 +36,7 @@ export class MemStorage implements IStorage {
         price: "From $23.18",
         organizer: "Jazz Kitchen Productions",
         description: "Experience the vibrant rhythms of Brazilian jazz with internationally acclaimed pianist José Luiz Martins.",
-        imageUrl: "https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400"
+        imageUrl: "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F1051553063%2F53596862044%2F1%2Foriginal.20250612-114654?crop=focalpoint&fit=crop&h=230&w=460&auto=format%2Ccompress&q=75&sharp=10&fp-x=0.5&fp-y=0.5&s=437618b6bf8a617d9e5b15c2f10c5200"
       },
       {
         title: "Harpsichordist Jory Vinikour plays Sparkling Scarlatti Sonatas",
@@ -45,7 +45,7 @@ export class MemStorage implements IStorage {
         price: "From $63.74",
         organizer: "Capriccio Baroque",
         description: "Renowned harpsichordist Jory Vinikour brings Scarlatti's brilliant sonatas to life in an intimate baroque setting.",
-        imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400"
+        imageUrl: "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F923324233%2F226582576668%2F1%2Foriginal.20241226-115525?crop=focalpoint&fit=crop&h=230&w=460&auto=format%2Ccompress&q=75&sharp=10&fp-x=0.5&fp-y=0.5&s=b5c46a7077ecbac3dfc3ff9b5bed4711"
       },
       {
         title: "Washington | 2025 Scholarship Pianists Debut Recital",
@@ -54,7 +54,7 @@ export class MemStorage implements IStorage {
         price: "Free",
         organizer: "Embassy Cultural Program",
         description: "Young scholarship recipients showcase their exceptional talent in this debut performance at the French Embassy.",
-        imageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400"
+        imageUrl: "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F1012220253%2F90224703647%2F1%2Foriginal.20250418-200017?crop=focalpoint&fit=crop&auto=format%2Ccompress&q=75&sharp=10&fp-x=5e-05&fp-y=5e-05&s=5ff3ae740072ef59d20791697d58778f"
       },
       {
         title: "Fatty Liver Foundation Benefit Recital | Celimene Daudet, Piano",
@@ -63,7 +63,7 @@ export class MemStorage implements IStorage {
         price: "Donation",
         organizer: "Fatty Liver Foundation",
         description: "Celebrated pianist Celimene Daudet performs in support of fatty liver disease research and awareness.",
-        imageUrl: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400"
+        imageUrl: "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F838593109%2F90224703647%2F1%2Foriginal.20240831-144333?crop=focalpoint&fit=crop&auto=format%2Ccompress&q=75&sharp=10&fp-x=5e-05&fp-y=5e-05&s=03ddc74cba0bd3eea567787ed92885b6"
       },
       {
         title: "DC Chamber Musicians Season Finale",
@@ -72,7 +72,7 @@ export class MemStorage implements IStorage {
         price: "From $35.00",
         organizer: "DC Chamber Musicians",
         description: "The season concludes with an extraordinary chamber music performance featuring piano and strings.",
-        imageUrl: "https://images.unsplash.com/photo-1465847899823-1fb0be2e9d48?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400"
+        imageUrl: "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F1034149363%2F1463811440923%2F1%2Foriginal.20250519-164932?crop=focalpoint&fit=crop&auto=format%2Ccompress&q=75&sharp=10&fp-x=0.5&fp-y=0.5&s=a8ec10685630b68281387c02e91c3350"
       },
       {
         title: "Considering Matthew Shepard",
@@ -81,7 +81,7 @@ export class MemStorage implements IStorage {
         price: "From $23.18",
         organizer: "Berkshire Choral",
         description: "A powerful choral and piano performance honoring the memory of Matthew Shepard.",
-        imageUrl: "https://images.unsplash.com/photo-1519139270028-15872d17547c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400"
+        imageUrl: "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F1040576603%2F528497426627%2F1%2Foriginal.20250528-133310?crop=focalpoint&fit=crop&h=230&w=460&auto=format%2Ccompress&q=75&sharp=10&fp-x=0.512310606061&fp-y=0.224252491694&s=359684fec5bab0f97ff22326e33009c3"
       }
     ];
 
@@ -124,7 +124,7 @@ export class MemStorage implements IStorage {
   async getVoteStats(): Promise<{ [concertId: number]: { excited: number; interested: number } }> {
     const stats: { [concertId: number]: { excited: number; interested: number } } = {};
     
-    for (const vote of this.votes.values()) {
+    for (const vote of Array.from(this.votes.values())) {
       if (!stats[vote.concertId]) {
         stats[vote.concertId] = { excited: 0, interested: 0 };
       }
@@ -167,7 +167,7 @@ export class MemStorage implements IStorage {
       const previousRank = concert.previousRank || currentRank;
       
       concert.rank = currentRank;
-      concert.rankChange = previousRank - currentRank;
+      (concert as any).rankChange = previousRank - currentRank;
       
       // Update previous ranks for next time
       this.previousRanks.set(concert.id, currentRank);
