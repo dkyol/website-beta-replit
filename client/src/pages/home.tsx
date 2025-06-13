@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { FeaturedConcert } from "@/components/featured-concert";
 import { Rankings } from "@/components/rankings";
@@ -21,12 +21,14 @@ export default function Home() {
   });
 
   // Filter for future concerts only for featured rotation
-  const futureConcerts = allConcerts ? filterFutureConcerts(allConcerts) : [];
-  const concerts = futureConcerts.length > 0 ? futureConcerts : allConcerts || [];
-
+  const concerts = useMemo(() => {
+    if (!allConcerts) return [];
+    const futureConcerts = filterFutureConcerts(allConcerts);
+    return futureConcerts.length > 0 ? futureConcerts : allConcerts;
+  }, [allConcerts]);
+  
   const nextConcert = () => {
     if (concerts && concerts.length > 0) {
-      console.log('Advancing to next concert from index', currentConcertIndex, 'to', (currentConcertIndex + 1) % concerts.length);
       setCurrentConcertIndex((prev) => (prev + 1) % concerts.length);
       // Reset vote state for new concert
       setUserVotes(new Set());
@@ -35,19 +37,18 @@ export default function Home() {
   };
 
   const onVoteSubmitted = () => {
-    console.log('onVoteSubmitted called, advancing to next concert');
     // Immediately advance to next concert after vote
     nextConcert();
   };
 
   const { timeLeft, reset: resetTimer } = useTimer(7, nextConcert);
 
-  // Reset to first concert when concerts load
+  // Only reset index if it's out of bounds
   useEffect(() => {
-    if (concerts && concerts.length > 0) {
+    if (concerts.length > 0 && currentConcertIndex >= concerts.length) {
       setCurrentConcertIndex(0);
     }
-  }, [concerts]);
+  }, [concerts.length, currentConcertIndex]);
 
   if (isLoading || !concerts || concerts.length === 0) {
     return (
