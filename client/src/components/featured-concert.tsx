@@ -70,9 +70,6 @@ export function FeaturedConcert({ concert, timeLeft, voteStats, onVoteSubmitted 
     >
       <div className="text-center mb-6">
         <h2 className="text-2xl font-bold text-slate-800 mb-2">Featured Concert</h2>
-        <div className="flex items-center justify-center gap-2 text-slate-600">
-          <span className="font-mono font-bold text-blue-600">{timeLeft}s</span>
-        </div>
       </div>
 
       <Card className="overflow-hidden shadow-lg">
