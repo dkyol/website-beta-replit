@@ -124,7 +124,7 @@ export function FeaturedConcert({ concert, timeLeft, voteStats, onVoteSubmitted 
                     className="w-full py-4 px-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                     size="lg"
                   >
-                    🎹 Very Excited!
+                    🎹 Very Excited! <span className="text-blue-200">(2 points)</span>
                   </Button>
                   
                   <Button
@@ -133,7 +133,7 @@ export function FeaturedConcert({ concert, timeLeft, voteStats, onVoteSubmitted 
                     className="w-full py-4 px-6 bg-slate-600 hover:bg-slate-700 text-white font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                     size="lg"
                   >
-                    🎵 Somewhat Interested
+                    🎵 Somewhat Interested <span className="text-slate-300">(1 point)</span>
                   </Button>
                 </div>
                 
@@ -154,17 +154,21 @@ export function FeaturedConcert({ concert, timeLeft, voteStats, onVoteSubmitted 
                   <h5 className="font-bold text-slate-700 mb-3">Current Votes:</h5>
                   <div className="space-y-2">
                     <div className="flex justify-between">
-                      <span className="text-slate-600">Very Excited:</span>
-                      <span className="font-semibold text-blue-600">{stats.excited}</span>
+                      <span className="text-slate-600">Very Excited (2 pts each):</span>
+                      <span className="font-semibold text-blue-600">{stats.excited} votes</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-600">Somewhat Interested:</span>
-                      <span className="font-semibold text-slate-600">{stats.interested}</span>
+                      <span className="text-slate-600">Somewhat Interested (1 pt each):</span>
+                      <span className="font-semibold text-slate-600">{stats.interested} votes</span>
                     </div>
                     <hr className="my-2" />
                     <div className="flex justify-between">
-                      <span className="font-semibold text-slate-700">Total Votes:</span>
-                      <span className="font-bold text-slate-800">{totalVotes}</span>
+                      <span className="font-semibold text-slate-700">Total Score:</span>
+                      <span className="font-bold text-slate-800">{(stats.excited * 2) + (stats.interested * 1)} points</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-500 text-sm">Total Votes:</span>
+                      <span className="text-slate-600 text-sm">{totalVotes}</span>
                     </div>
                   </div>
                 </CardContent>
