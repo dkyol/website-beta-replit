@@ -169,11 +169,11 @@ export function FeaturedConcert({ concert, timeLeft, voteStats, onVoteSubmitted 
                   <h5 className="font-bold text-slate-700 mb-3">Current Votes:</h5>
                   <div className="space-y-2">
                     <div className="flex justify-between">
-                      <span className="text-slate-600">Very Excited (2 pts each):</span>
+                      <span className="text-slate-600">Very Excited:</span>
                       <span className="font-semibold text-blue-600">{stats.excited} votes</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-600">Somewhat Interested (1 pt each):</span>
+                      <span className="text-slate-600">Somewhat Interested:</span>
                       <span className="font-semibold text-slate-600">{stats.interested} votes</span>
                     </div>
                     <hr className="my-2" />
