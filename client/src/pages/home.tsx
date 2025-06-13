@@ -24,10 +24,16 @@ export default function Home() {
       setCurrentConcertIndex((prev) => (prev + 1) % concerts.length);
       // Reset vote state for new concert
       setUserVotes(new Set());
+      resetTimer(); // Reset the timer when advancing
     }
   };
 
-  const { timeLeft } = useTimer(30, nextConcert);
+  const onVoteSubmitted = () => {
+    // Immediately advance to next concert after vote
+    nextConcert();
+  };
+
+  const { timeLeft, reset: resetTimer } = useTimer(7, nextConcert);
 
   // Reset to first concert when concerts load
   useEffect(() => {
@@ -103,6 +109,7 @@ export default function Home() {
           concert={currentConcert}
           timeLeft={timeLeft}
           voteStats={currentVoteStats}
+          onVoteSubmitted={onVoteSubmitted}
         />
         
         <Rankings />

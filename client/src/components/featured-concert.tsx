@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { apiRequest } from "@/lib/queryClient";
@@ -11,12 +11,18 @@ interface FeaturedConcertProps {
   concert: Concert;
   timeLeft: number;
   voteStats?: { excited: number; interested: number };
+  onVoteSubmitted?: () => void;
 }
 
-export function FeaturedConcert({ concert, timeLeft, voteStats }: FeaturedConcertProps) {
+export function FeaturedConcert({ concert, timeLeft, voteStats, onVoteSubmitted }: FeaturedConcertProps) {
   const [hasVoted, setHasVoted] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // Reset vote state when concert changes
+  useEffect(() => {
+    setHasVoted(false);
+  }, [concert.id]);
 
   const voteMutation = useMutation({
     mutationFn: async (voteType: 'excited' | 'interested') => {
@@ -35,6 +41,8 @@ export function FeaturedConcert({ concert, timeLeft, voteStats }: FeaturedConcer
       // Invalidate and refetch rankings
       queryClient.invalidateQueries({ queryKey: ['/api/rankings'] });
       queryClient.invalidateQueries({ queryKey: ['/api/vote-stats'] });
+      // Immediately advance to next concert
+      onVoteSubmitted?.();
     },
     onError: () => {
       toast({
