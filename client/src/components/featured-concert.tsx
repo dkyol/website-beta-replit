@@ -33,6 +33,7 @@ export function FeaturedConcert({ concert, timeLeft, voteStats, onVoteSubmitted 
       return response.json();
     },
     onSuccess: () => {
+      console.log('Vote successful, calling onVoteSubmitted');
       setHasVoted(true);
       toast({
         title: "Vote recorded!",
@@ -42,7 +43,12 @@ export function FeaturedConcert({ concert, timeLeft, voteStats, onVoteSubmitted 
       queryClient.invalidateQueries({ queryKey: ['/api/rankings'] });
       queryClient.invalidateQueries({ queryKey: ['/api/vote-stats'] });
       // Immediately advance to next concert
-      onVoteSubmitted?.();
+      if (onVoteSubmitted) {
+        console.log('Calling onVoteSubmitted callback');
+        onVoteSubmitted();
+      } else {
+        console.log('onVoteSubmitted callback not provided');
+      }
     },
     onError: () => {
       toast({
@@ -54,6 +60,7 @@ export function FeaturedConcert({ concert, timeLeft, voteStats, onVoteSubmitted 
   });
 
   const handleVote = (voteType: 'excited' | 'interested') => {
+    console.log('Vote button clicked:', voteType, 'hasVoted:', hasVoted, 'isPending:', voteMutation.isPending);
     if (hasVoted || voteMutation.isPending) return;
     voteMutation.mutate(voteType);
   };

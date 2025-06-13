@@ -26,6 +26,7 @@ export default function Home() {
 
   const nextConcert = () => {
     if (concerts && concerts.length > 0) {
+      console.log('Advancing to next concert from index', currentConcertIndex, 'to', (currentConcertIndex + 1) % concerts.length);
       setCurrentConcertIndex((prev) => (prev + 1) % concerts.length);
       // Reset vote state for new concert
       setUserVotes(new Set());
@@ -34,6 +35,7 @@ export default function Home() {
   };
 
   const onVoteSubmitted = () => {
+    console.log('onVoteSubmitted called, advancing to next concert');
     // Immediately advance to next concert after vote
     nextConcert();
   };
