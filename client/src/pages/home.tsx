@@ -11,7 +11,7 @@ export default function Home() {
   const [userVotes, setUserVotes] = useState<Set<number>>(new Set());
 
   const { data: concerts, isLoading } = useQuery<Concert[]>({
-    queryKey: ['/api/concerts'],
+    queryKey: ['/api/concerts/future'],
   });
 
   const { data: voteStats } = useQuery<{ [concertId: number]: { excited: number; interested: number } }>({

@@ -7,6 +7,8 @@ from dotenv import load_dotenv
 from pydantic import BaseModel, ValidationError
 from typing import Optional, List, Dict
 import json
+from datetime import datetime, timedelta
+import re
 
 load_dotenv()
 
@@ -22,6 +24,59 @@ def get_db_connection():
         password=os.getenv('PGPASSWORD'),
         port=os.getenv('PGPORT')
     )
+
+def parse_concert_date(date_string):
+    """Parse various concert date formats and return a datetime object"""
+    try:
+        # Remove any extra whitespace
+        date_string = date_string.strip()
+        current_year = datetime.now().year
+        
+        # Handle formats like "Sat, Jun 28, 8:00 PM" 
+        if re.match(r'^[A-Za-z]{3}, [A-Za-z]{3} \d{1,2}, \d{1,2}:\d{2} [AP]M$', date_string):
+            try:
+                return datetime.strptime(f"{current_year} {date_string}", '%Y %a, %b %d, %I:%M %p')
+            except:
+                # If current year doesn't work, try next year
+                return datetime.strptime(f"{current_year + 1} {date_string}", '%Y %a, %b %d, %I:%M %p')
+        
+        # Handle formats like "Fri, Jul 18, 7:30 PM"
+        if re.match(r'^[A-Za-z]{3}, [A-Za-z]{3} \d{1,2}, \d{1,2}:\d{2} [AP]M$', date_string):
+            try:
+                return datetime.strptime(f"{current_year} {date_string}", '%Y %a, %b %d, %I:%M %p')
+            except:
+                return datetime.strptime(f"{current_year + 1} {date_string}", '%Y %a, %b %d, %I:%M %p')
+        
+        # Handle formats like "Thu, Oct 23, 7:30 PM"
+        if re.match(r'^[A-Za-z]{3}, [A-Za-z]{3} \d{1,2}, \d{1,2}:\d{2} [AP]M$', date_string):
+            try:
+                return datetime.strptime(f"{current_year} {date_string}", '%Y %a, %b %d, %I:%M %p')
+            except:
+                return datetime.strptime(f"{current_year + 1} {date_string}", '%Y %a, %b %d, %I:%M %p')
+        
+        # Handle formats like "Sunday at 7:00 PM" - assume next occurrence
+        if re.match(r'^[A-Za-z]+ at \d{1,2}:\d{2} [AP]M$', date_string):
+            return datetime.now() + timedelta(days=7)
+        
+        # Handle formats like "Saturday at 3:00 PM"
+        if re.match(r'^[A-Za-z]+ at \d{1,2}:\d{2} [AP]M$', date_string):
+            return datetime.now() + timedelta(days=7)
+        
+        # Default: assume it's a future date
+        return datetime.now() + timedelta(days=30)
+        
+    except Exception as e:
+        # If parsing fails, assume it's a future concert
+        return datetime.now() + timedelta(days=30)
+
+def is_future_concert(date_string):
+    """Check if a concert date is in the future"""
+    try:
+        concert_date = parse_concert_date(date_string)
+        return concert_date > datetime.now()
+    except:
+        # If we can't parse the date, assume it's future to be safe
+        return True
 
 # Pydantic models
 class Concert(BaseModel):
@@ -146,6 +201,26 @@ def get_concerts():
         return jsonify([dict(concert) for concert in concerts])
     except Exception as e:
         return jsonify({'error': 'Failed to fetch concerts'}), 500
+
+@app.route('/api/concerts/future', methods=['GET'])
+def get_future_concerts():
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        cur.execute("SELECT id, title, date, venue, price, organizer, description, image_url as imageUrl FROM concerts")
+        all_concerts = cur.fetchall()
+        cur.close()
+        conn.close()
+        
+        # Filter for future concerts
+        future_concerts = []
+        for concert in all_concerts:
+            if is_future_concert(concert['date']):
+                future_concerts.append(dict(concert))
+        
+        return jsonify(future_concerts)
+    except Exception as e:
+        return jsonify({'error': 'Failed to fetch future concerts'}), 500
 
 @app.route('/api/concerts/<int:concert_id>', methods=['GET'])
 def get_concert_by_id(concert_id):
