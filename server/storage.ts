@@ -1,4 +1,6 @@
 import { concerts, votes, type Concert, type InsertConcert, type Vote, type InsertVote, type ConcertWithVotes } from "@shared/schema";
+import { db } from "./db";
+import { eq, sql } from "drizzle-orm";
 
 export interface IStorage {
   getConcerts(): Promise<Concert[]>;
@@ -9,25 +11,22 @@ export interface IStorage {
   getConcertsWithVotes(): Promise<ConcertWithVotes[]>;
 }
 
-export class MemStorage implements IStorage {
-  private concerts: Map<number, Concert>;
-  private votes: Map<number, Vote>;
-  private concertIdCounter: number;
-  private voteIdCounter: number;
+export class DatabaseStorage implements IStorage {
   private previousRanks: Map<number, number>;
 
   constructor() {
-    this.concerts = new Map();
-    this.votes = new Map();
-    this.concertIdCounter = 1;
-    this.voteIdCounter = 1;
     this.previousRanks = new Map();
     
-    // Initialize with real DC piano concert data
+    // Initialize with real DC piano concert data if tables are empty
     this.initializeConcerts();
   }
 
-  private initializeConcerts() {
+  private async initializeConcerts() {
+    // Check if concerts already exist in database
+    const existingConcerts = await db.select().from(concerts).limit(1);
+    if (existingConcerts.length > 0) {
+      return; // Data already exists, no need to initialize
+    }
     const concertData = [
       {
         title: "José Luiz Martins' Brazil Project",
@@ -85,54 +84,58 @@ export class MemStorage implements IStorage {
       }
     ];
 
-    concertData.forEach(data => {
-      const concert: Concert = {
-        id: this.concertIdCounter++,
-        ...data
-      };
-      this.concerts.set(concert.id, concert);
-    });
+    // Insert initial concert data into database
+    for (const data of concertData) {
+      await db.insert(concerts).values(data);
+    }
   }
 
   async getConcerts(): Promise<Concert[]> {
-    return Array.from(this.concerts.values());
+    return await db.select().from(concerts);
   }
 
   async getConcertById(id: number): Promise<Concert | undefined> {
-    return this.concerts.get(id);
+    const [concert] = await db.select().from(concerts).where(eq(concerts.id, id));
+    return concert || undefined;
   }
 
   async createConcert(concert: InsertConcert): Promise<Concert> {
-    const newConcert: Concert = {
-      id: this.concertIdCounter++,
-      ...concert
-    };
-    this.concerts.set(newConcert.id, newConcert);
+    const [newConcert] = await db
+      .insert(concerts)
+      .values(concert)
+      .returning();
     return newConcert;
   }
 
   async vote(vote: InsertVote): Promise<Vote> {
-    const newVote: Vote = {
-      id: this.voteIdCounter++,
-      ...vote,
-      createdAt: new Date()
-    };
-    this.votes.set(newVote.id, newVote);
+    const [newVote] = await db
+      .insert(votes)
+      .values(vote)
+      .returning();
     return newVote;
   }
 
   async getVoteStats(): Promise<{ [concertId: number]: { excited: number; interested: number } }> {
+    const voteResults = await db
+      .select({
+        concertId: votes.concertId,
+        voteType: votes.voteType,
+        count: sql<number>`count(*)`.as('count')
+      })
+      .from(votes)
+      .groupBy(votes.concertId, votes.voteType);
+
     const stats: { [concertId: number]: { excited: number; interested: number } } = {};
     
-    for (const vote of Array.from(this.votes.values())) {
-      if (!stats[vote.concertId]) {
-        stats[vote.concertId] = { excited: 0, interested: 0 };
+    for (const result of voteResults) {
+      if (!stats[result.concertId]) {
+        stats[result.concertId] = { excited: 0, interested: 0 };
       }
       
-      if (vote.voteType === 'excited') {
-        stats[vote.concertId].excited++;
-      } else if (vote.voteType === 'interested') {
-        stats[vote.concertId].interested++;
+      if (result.voteType === 'excited') {
+        stats[result.concertId].excited = result.count;
+      } else if (result.voteType === 'interested') {
+        stats[result.concertId].interested = result.count;
       }
     }
 
@@ -177,4 +180,4 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
