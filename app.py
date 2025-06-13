@@ -215,12 +215,17 @@ def get_future_concerts():
         # Filter for future concerts
         future_concerts = []
         for concert in all_concerts:
-            if is_future_concert(concert['date']):
+            try:
+                if is_future_concert(concert['date']):
+                    future_concerts.append(dict(concert))
+            except Exception as date_error:
+                # If date parsing fails for a concert, include it to be safe
                 future_concerts.append(dict(concert))
         
         return jsonify(future_concerts)
     except Exception as e:
-        return jsonify({'error': 'Failed to fetch future concerts'}), 500
+        print(f"Error in get_future_concerts: {e}")
+        return jsonify({'error': f'Failed to fetch future concerts: {str(e)}'}), 500
 
 @app.route('/api/concerts/<int:concert_id>', methods=['GET'])
 def get_concert_by_id(concert_id):

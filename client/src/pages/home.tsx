@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { FeaturedConcert } from "@/components/featured-concert";
 import { Rankings } from "@/components/rankings";
 import { useTimer } from "@/hooks/use-timer";
+import { filterFutureConcerts } from "@/lib/dateUtils";
 import type { Concert } from "@shared/schema";
 import bannerImage from "@assets/Screenshot 2025-06-12 232843_1749785388266.png";
 
@@ -10,14 +11,18 @@ export default function Home() {
   const [currentConcertIndex, setCurrentConcertIndex] = useState(0);
   const [userVotes, setUserVotes] = useState<Set<number>>(new Set());
 
-  const { data: concerts, isLoading } = useQuery<Concert[]>({
-    queryKey: ['/api/concerts/future'],
+  const { data: allConcerts, isLoading } = useQuery<Concert[]>({
+    queryKey: ['/api/concerts'],
   });
 
   const { data: voteStats } = useQuery<{ [concertId: number]: { excited: number; interested: number } }>({
     queryKey: ['/api/vote-stats'],
     refetchInterval: 2000, // Refetch every 2 seconds for real-time vote updates
   });
+
+  // Filter for future concerts only for featured rotation
+  const futureConcerts = allConcerts ? filterFutureConcerts(allConcerts) : [];
+  const concerts = futureConcerts.length > 0 ? futureConcerts : allConcerts || [];
 
   const nextConcert = () => {
     if (concerts && concerts.length > 0) {
