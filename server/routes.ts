@@ -35,6 +35,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const validatedData = insertVoteSchema.parse(req.body);
       
+      // Generate or get session ID from request
+      const sessionId = req.body.sessionId || `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      
       // Verify concert exists
       const concert = await storage.getConcertById(validatedData.concertId);
       if (!concert) {
@@ -46,9 +49,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Invalid vote type" });
       }
 
-      const vote = await storage.vote(validatedData);
+      const vote = await storage.vote(validatedData, sessionId);
       res.json(vote);
     } catch (error: any) {
+      console.error('Vote submission error:', error);
       if (error.name === 'ZodError') {
         return res.status(400).json({ error: "Invalid vote data" });
       }
