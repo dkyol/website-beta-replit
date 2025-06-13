@@ -5,40 +5,38 @@
 export function parseConcertDate(dateString: string): Date {
   try {
     const trimmed = dateString.trim();
-    const currentYear = new Date().getFullYear();
     
-    // Handle formats like "Sat, Jun 28, 8:00 PM"
-    const dateWithDayPattern = /^[A-Za-z]{3}, [A-Za-z]{3} \d{1,2}, \d{1,2}:\d{2} [AP]M$/;
-    if (dateWithDayPattern.test(trimmed)) {
-      try {
-        const dateWithYear = `${currentYear} ${trimmed}`;
-        const parsed = new Date(dateWithYear);
-        if (!isNaN(parsed.getTime())) {
-          // If the parsed date is in the past, try next year
-          if (parsed < new Date()) {
-            const nextYearDate = `${currentYear + 1} ${trimmed}`;
-            const nextYearParsed = new Date(nextYearDate);
-            if (!isNaN(nextYearParsed.getTime())) {
-              return nextYearParsed;
-            }
-          }
-          return parsed;
+    // Handle standardized format "Day, Month DD, YYYY at H:MM PM"
+    const standardPattern = /^([A-Za-z]+), ([A-Za-z]+) (\d{1,2}), (\d{4}) at (\d{1,2}):(\d{2}) ([AP]M)$/;
+    const match = trimmed.match(standardPattern);
+    
+    if (match) {
+      const [, , monthName, day, year, hour, minute, period] = match;
+      
+      // Convert month name to number
+      const monthMap: { [key: string]: number } = {
+        'January': 0, 'February': 1, 'March': 2, 'April': 3,
+        'May': 4, 'June': 5, 'July': 6, 'August': 7,
+        'September': 8, 'October': 9, 'November': 10, 'December': 11
+      };
+      
+      const monthNum = monthMap[monthName];
+      if (monthNum !== undefined) {
+        let hour24 = parseInt(hour);
+        if (period === 'PM' && hour24 !== 12) {
+          hour24 += 12;
+        } else if (period === 'AM' && hour24 === 12) {
+          hour24 = 0;
         }
-      } catch {
-        // Fall through to default handling
+        
+        const date = new Date(parseInt(year), monthNum, parseInt(day), hour24, parseInt(minute));
+        if (!isNaN(date.getTime())) {
+          return date;
+        }
       }
     }
     
-    // Handle formats like "Sunday at 7:00 PM" - assume next occurrence
-    const dayAtTimePattern = /^[A-Za-z]+ at \d{1,2}:\d{2} [AP]M$/;
-    if (dayAtTimePattern.test(trimmed)) {
-      // For relative dates, assume they're in the future
-      const nextWeek = new Date();
-      nextWeek.setDate(nextWeek.getDate() + 7);
-      return nextWeek;
-    }
-    
-    // Default: try to parse as-is, or assume future
+    // Fallback: try direct parsing
     const directParse = new Date(trimmed);
     if (!isNaN(directParse.getTime())) {
       return directParse;

@@ -21,8 +21,18 @@ export default function Home() {
     refetchInterval: 2000, // Refetch every 2 seconds for real-time vote updates
   });
 
-  // Use all concerts for featured rotation (all are future events)
-  const concerts = allConcerts || [];
+  // Filter for future concerts only for featured rotation
+  const concerts = useMemo(() => {
+    if (!allConcerts) return [];
+    const futureConcerts = filterFutureConcerts(allConcerts);
+    console.log('Date filtering results:', {
+      totalConcerts: allConcerts.length,
+      futureConcerts: futureConcerts.length,
+      pastConcerts: allConcerts.length - futureConcerts.length,
+      concertDates: allConcerts.map(c => ({ id: c.id, title: c.title, date: c.date }))
+    });
+    return futureConcerts.length > 0 ? futureConcerts : allConcerts;
+  }, [allConcerts]);
   
   const nextConcert = () => {
     if (concerts && concerts.length > 0) {
