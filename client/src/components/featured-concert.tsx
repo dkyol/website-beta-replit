@@ -13,9 +13,10 @@ interface FeaturedConcertProps {
   timeLeft: number;
   voteStats?: { excited: number; interested: number };
   onVoteSubmitted?: () => void;
+  sessionId?: string;
 }
 
-export function FeaturedConcert({ concert, timeLeft, voteStats, onVoteSubmitted }: FeaturedConcertProps) {
+export function FeaturedConcert({ concert, timeLeft, voteStats, onVoteSubmitted, sessionId }: FeaturedConcertProps) {
   const [hasVoted, setHasVoted] = useState(false);
   const [imageError, setImageError] = useState(false);
   const { toast } = useToast();

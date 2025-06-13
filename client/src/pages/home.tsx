@@ -2,7 +2,9 @@ import { useState, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { FeaturedConcert } from "@/components/featured-concert";
 import { Rankings } from "@/components/rankings";
+import { UserBadges } from "@/components/user-badges";
 import { useTimer } from "@/hooks/use-timer";
+import { useSession } from "@/hooks/use-session";
 import { filterFutureConcerts } from "@/lib/dateUtils";
 import type { Concert } from "@shared/schema";
 import bannerImage from "@assets/Screenshot 2025-06-12 232843_1749785388266.png";
@@ -12,6 +14,7 @@ export default function Home() {
   const [currentConcertIndex, setCurrentConcertIndex] = useState(0);
   const [userVotes, setUserVotes] = useState<Set<number>>(new Set());
   const [isInitialized, setIsInitialized] = useState(false);
+  const sessionId = useSession();
 
   const { data: allConcerts, isLoading } = useQuery<Concert[]>({
     queryKey: ['/api/concerts'],

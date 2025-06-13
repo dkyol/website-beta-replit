@@ -80,6 +80,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get user badges by session ID
+  app.get("/api/badges/:sessionId", async (req, res) => {
+    try {
+      const sessionId = req.params.sessionId;
+      const userBadges = await storage.getUserBadges(sessionId);
+      res.json(userBadges);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch user badges" });
+    }
+  });
+
+  // Get available badges list
+  app.get("/api/badges", async (req, res) => {
+    try {
+      // Import badges directly to avoid circular dependency
+      const { AVAILABLE_BADGES } = await import("@shared/badges");
+      const badgesInfo = AVAILABLE_BADGES.map(badge => ({
+        id: badge.id,
+        name: badge.name,
+        description: badge.description,
+        icon: badge.icon,
+        color: badge.color
+      }));
+      res.json(badgesInfo);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch available badges" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
