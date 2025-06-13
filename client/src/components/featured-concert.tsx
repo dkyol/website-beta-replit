@@ -5,6 +5,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { PianoFallback } from "./piano-fallback";
 import type { Concert, ConcertWithVotes } from "@shared/schema";
 
 interface FeaturedConcertProps {
@@ -16,12 +17,14 @@ interface FeaturedConcertProps {
 
 export function FeaturedConcert({ concert, timeLeft, voteStats, onVoteSubmitted }: FeaturedConcertProps) {
   const [hasVoted, setHasVoted] = useState(false);
+  const [imageError, setImageError] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Reset vote state when concert changes
+  // Reset vote state and image error when concert changes
   useEffect(() => {
     setHasVoted(false);
+    setImageError(false);
   }, [concert.id]);
 
   const voteMutation = useMutation({
@@ -80,11 +83,19 @@ export function FeaturedConcert({ concert, timeLeft, voteStats, onVoteSubmitted 
         <CardContent className="p-0">
           <div className="grid md:grid-cols-2 gap-8 p-8">
             <div className="space-y-6">
-              <img 
-                src={concert.imageUrl} 
-                alt={concert.title}
-                className="w-full h-64 md:h-80 object-cover rounded-xl shadow-md"
-              />
+              {imageError ? (
+                <div className="w-full h-64 md:h-80 bg-slate-100 rounded-xl shadow-md flex items-center justify-center">
+                  <PianoFallback className="w-full h-full" />
+                </div>
+              ) : (
+                <img 
+                  src={concert.imageUrl} 
+                  alt={concert.title}
+                  className="w-full h-64 md:h-80 object-cover rounded-xl shadow-md"
+                  onError={() => setImageError(true)}
+                  onLoad={() => setImageError(false)}
+                />
+              )}
               
               <div>
                 <h3 className="text-2xl md:text-3xl font-bold text-slate-800 mb-3">
