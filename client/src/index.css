@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(215, 25%, 27%);
+  --muted: hsl(215, 16%, 97%);
+  --muted-foreground: hsl(215, 13%, 45%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(215, 25%, 27%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(215, 25%, 27%);
+  --border: hsl(215, 12%, 84%);
+  --input: hsl(215, 12%, 84%);
+  --primary: hsl(217, 91%, 60%);
+  --primary-foreground: hsl(210, 100%, 98%);
+  --secondary: hsl(215, 16%, 97%);
+  --secondary-foreground: hsl(215, 19%, 35%);
+  --accent: hsl(215, 16%, 97%);
+  --accent-foreground: hsl(215, 19%, 35%);
+  --destructive: hsl(0, 84%, 60%);
+  --destructive-foreground: hsl(210, 100%, 98%);
+  --ring: hsl(215, 25%, 27%);
+  --radius: 0.75rem;
+}
+
+.dark {
+  --background: hsl(215, 28%, 17%);
+  --foreground: hsl(213, 31%, 91%);
+  --muted: hsl(215, 19%, 35%);
+  --muted-foreground: hsl(215, 13%, 65%);
+  --popover: hsl(215, 28%, 17%);
+  --popover-foreground: hsl(213, 31%, 91%);
+  --card: hsl(215, 28%, 17%);
+  --card-foreground: hsl(213, 31%, 91%);
+  --border: hsl(215, 19%, 35%);
+  --input: hsl(215, 19%, 35%);
+  --primary: hsl(217, 91%, 60%);
+  --primary-foreground: hsl(210, 100%, 98%);
+  --secondary: hsl(215, 19%, 35%);
+  --secondary-foreground: hsl(213, 31%, 91%);
+  --accent: hsl(215, 19%, 35%);
+  --accent-foreground: hsl(213, 31%, 91%);
+  --destructive: hsl(0, 62%, 30%);
+  --destructive-foreground: hsl(210, 100%, 98%);
+  --ring: hsl(217, 91%, 60%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+
+@keyframes slideIn {
+  from { 
+    opacity: 0; 
+    transform: translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes bounceIn {
+  0% { 
+    transform: scale(0.3); 
+    opacity: 0; 
+  }
+  50% { 
+    transform: scale(1.05); 
+  }
+  70% { 
+    transform: scale(0.9); 
+  }
+  100% { 
+    transform: scale(1); 
+    opacity: 1; 
+  }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.5s ease-out;
+}
+
+.animate-bounce-in {
+  animation: bounceIn 0.3s ease-out;
+}
