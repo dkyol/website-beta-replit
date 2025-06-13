@@ -23,6 +23,7 @@ export function FeaturedConcert({ concert, timeLeft, voteStats, onVoteSubmitted,
   const [lastVoteType, setLastVoteType] = useState<"excited" | "interested" | null>(null);
   const [showFloatingIndicator, setShowFloatingIndicator] = useState(false);
   const [floatingPosition, setFloatingPosition] = useState({ x: 0, y: 0 });
+  const [previousStats, setPreviousStats] = useState({ excited: 0, interested: 0 });
   const [imageError, setImageError] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -31,7 +32,18 @@ export function FeaturedConcert({ concert, timeLeft, voteStats, onVoteSubmitted,
   useEffect(() => {
     setHasVoted(false);
     setImageError(false);
+    // Update previous stats when concert changes
+    const stats = voteStats || { excited: 0, interested: 0 };
+    setPreviousStats(stats);
   }, [concert.id]);
+
+  useEffect(() => {
+    // Update previous stats when vote stats change (to enable animation)
+    const stats = voteStats || { excited: 0, interested: 0 };
+    if (stats.excited !== previousStats.excited || stats.interested !== previousStats.interested) {
+      setPreviousStats(stats);
+    }
+  }, [voteStats]);
 
   const voteMutation = useMutation({
     mutationFn: async (voteType: 'excited' | 'interested') => {
@@ -185,25 +197,19 @@ export function FeaturedConcert({ concert, timeLeft, voteStats, onVoteSubmitted,
 
               <Card className="bg-slate-50">
                 <CardContent className="p-6">
-                  <h5 className="font-bold text-slate-700 mb-3">Current Votes:</h5>
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-slate-600">Very Excited:</span>
-                      <span className="font-semibold text-blue-600">{stats.excited} votes</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-600">Somewhat Interested:</span>
-                      <span className="font-semibold text-slate-600">{stats.interested} votes</span>
-                    </div>
-                    <hr className="my-2" />
-                    <div className="flex justify-between">
-                      <span className="font-semibold text-slate-700">Total Score:</span>
-                      <span className="font-bold text-slate-800">{(stats.excited * 2) + (stats.interested * 1)} points</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-500 text-sm">Total Votes:</span>
-                      <span className="text-slate-600 text-sm">{totalVotes}</span>
-                    </div>
+                  <h5 className="font-bold text-slate-700 mb-4">Current Votes:</h5>
+                  <AnimatedVoteCounter
+                    excited={stats.excited}
+                    interested={stats.interested}
+                    previousExcited={previousStats.excited}
+                    previousInterested={previousStats.interested}
+                  />
+                  <div className="mt-4">
+                    <VoteProgressBar
+                      excited={stats.excited}
+                      interested={stats.interested}
+                      maxVotes={25}
+                    />
                   </div>
                 </CardContent>
               </Card>
