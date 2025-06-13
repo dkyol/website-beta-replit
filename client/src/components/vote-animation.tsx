@@ -175,7 +175,7 @@ interface PulseVoteButtonProps {
   children: React.ReactNode;
   isVoting: boolean;
   hasVoted: boolean;
-  onClick: () => void;
+  onClick: (event: React.MouseEvent) => void;
   className?: string;
 }
 

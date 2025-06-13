@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { PianoFallback } from "./piano-fallback";
 import { VoteAnimation, FloatingVoteIndicator, PulseVoteButton } from "./vote-animation";
+import { AnimatedVoteCounter, VoteProgressBar } from "./animated-vote-counter";
 import type { Concert, ConcertWithVotes } from "@shared/schema";
 
 interface FeaturedConcertProps {
@@ -41,8 +42,9 @@ export function FeaturedConcert({ concert, timeLeft, voteStats, onVoteSubmitted,
       });
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (_, voteType) => {
       setHasVoted(true);
+      setLastVoteType(voteType);
       toast({
         title: "Vote recorded!",
         description: "Thank you for voting on this concert.",
@@ -57,7 +59,7 @@ export function FeaturedConcert({ concert, timeLeft, voteStats, onVoteSubmitted,
       if (onVoteSubmitted) {
         setTimeout(() => {
           onVoteSubmitted();
-        }, 100); // Small delay to ensure state updates complete
+        }, 2500); // Delay to allow animation to complete
       }
     },
     onError: () => {
@@ -69,8 +71,16 @@ export function FeaturedConcert({ concert, timeLeft, voteStats, onVoteSubmitted,
     }
   });
 
-  const handleVote = (voteType: 'excited' | 'interested') => {
+  const handleVote = (voteType: 'excited' | 'interested', event: React.MouseEvent) => {
     if (hasVoted || voteMutation.isPending) return;
+    
+    // Capture click position for floating indicator
+    const rect = event.currentTarget.getBoundingClientRect();
+    setFloatingPosition({
+      x: rect.left + rect.width / 2,
+      y: rect.top + window.scrollY
+    });
+    
     voteMutation.mutate(voteType);
   };
 
@@ -142,23 +152,23 @@ export function FeaturedConcert({ concert, timeLeft, voteStats, onVoteSubmitted,
                 </h4>
                 
                 <div className="space-y-4">
-                  <Button
-                    onClick={() => handleVote('excited')}
-                    disabled={hasVoted || voteMutation.isPending}
-                    className="w-full py-4 px-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                    size="lg"
+                  <PulseVoteButton
+                    onClick={(e) => handleVote('excited', e)}
+                    isVoting={voteMutation.isPending && lastVoteType === 'excited'}
+                    hasVoted={hasVoted}
+                    className="w-full py-4 px-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     🎹 Very Excited!
-                  </Button>
+                  </PulseVoteButton>
                   
-                  <Button
-                    onClick={() => handleVote('interested')}
-                    disabled={hasVoted || voteMutation.isPending}
-                    className="w-full py-4 px-6 bg-slate-600 hover:bg-slate-700 text-white font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                    size="lg"
+                  <PulseVoteButton
+                    onClick={(e) => handleVote('interested', e)}
+                    isVoting={voteMutation.isPending && lastVoteType === 'interested'}
+                    hasVoted={hasVoted}
+                    className="w-full py-4 px-6 bg-slate-600 hover:bg-slate-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     🎵 Somewhat Interested
-                  </Button>
+                  </PulseVoteButton>
                 </div>
                 
                 {hasVoted && (
@@ -201,6 +211,21 @@ export function FeaturedConcert({ concert, timeLeft, voteStats, onVoteSubmitted,
           </div>
         </CardContent>
       </Card>
+      
+      {/* Vote Animation Overlay */}
+      <VoteAnimation 
+        voteType={lastVoteType} 
+        onAnimationComplete={() => setLastVoteType(null)}
+      />
+      
+      {/* Floating Vote Indicator */}
+      {showFloatingIndicator && lastVoteType && (
+        <FloatingVoteIndicator
+          count={1}
+          type={lastVoteType}
+          position={floatingPosition}
+        />
+      )}
     </motion.div>
   );
 }
