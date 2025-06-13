@@ -142,7 +142,7 @@ export default function Home() {
             <img 
               src={sightTuneLogo} 
               alt="SightTune Music Technology" 
-              className="h-8 w-auto opacity-80 hover:opacity-100 transition-opacity"
+              className="h-12 w-auto opacity-80 hover:opacity-100 transition-opacity"
             />
             <span className="text-sm font-medium">SightTune</span>
           </div>
