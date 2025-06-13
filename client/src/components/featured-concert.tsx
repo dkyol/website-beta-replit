@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { PianoFallback } from "./piano-fallback";
+import { VoteAnimation, FloatingVoteIndicator, PulseVoteButton } from "./vote-animation";
 import type { Concert, ConcertWithVotes } from "@shared/schema";
 
 interface FeaturedConcertProps {
@@ -18,6 +19,9 @@ interface FeaturedConcertProps {
 
 export function FeaturedConcert({ concert, timeLeft, voteStats, onVoteSubmitted, sessionId }: FeaturedConcertProps) {
   const [hasVoted, setHasVoted] = useState(false);
+  const [lastVoteType, setLastVoteType] = useState<"excited" | "interested" | null>(null);
+  const [showFloatingIndicator, setShowFloatingIndicator] = useState(false);
+  const [floatingPosition, setFloatingPosition] = useState({ x: 0, y: 0 });
   const [imageError, setImageError] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
