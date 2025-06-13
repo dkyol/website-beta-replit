@@ -24,7 +24,7 @@ export function UserBadges({ sessionId }: UserBadgesProps) {
     );
   }
 
-  if (!userBadges || userBadges.badges.length === 0) {
+  if (!userBadges || !userBadges.badges || userBadges.badges.length === 0) {
     return (
       <div className="text-center py-4">
         <p className="text-slate-600 text-sm">Vote on concerts to earn badges!</p>

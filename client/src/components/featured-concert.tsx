@@ -32,7 +32,8 @@ export function FeaturedConcert({ concert, timeLeft, voteStats, onVoteSubmitted,
     mutationFn: async (voteType: 'excited' | 'interested') => {
       const response = await apiRequest('POST', '/api/vote', {
         concertId: concert.id,
-        voteType
+        voteType,
+        sessionId
       });
       return response.json();
     },
@@ -42,9 +43,12 @@ export function FeaturedConcert({ concert, timeLeft, voteStats, onVoteSubmitted,
         title: "Vote recorded!",
         description: "Thank you for voting on this concert.",
       });
-      // Invalidate and refetch rankings
+      // Invalidate and refetch rankings and badges
       queryClient.invalidateQueries({ queryKey: ['/api/rankings'] });
       queryClient.invalidateQueries({ queryKey: ['/api/vote-stats'] });
+      if (sessionId) {
+        queryClient.invalidateQueries({ queryKey: ['/api/badges', sessionId] });
+      }
       // Immediately advance to next concert
       if (onVoteSubmitted) {
         setTimeout(() => {

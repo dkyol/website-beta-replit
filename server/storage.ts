@@ -118,8 +118,8 @@ export class DatabaseStorage implements IStorage {
       .values({ ...vote, sessionId })
       .returning();
     
-    // TODO: Update user session statistics after vote
-    // await this.createOrUpdateUserSession(sessionId);
+    // Update user session statistics after vote
+    await this.createOrUpdateUserSession(sessionId);
     
     return newVote;
   }

@@ -132,7 +132,15 @@ export default function Home() {
           timeLeft={timeLeft}
           voteStats={currentVoteStats}
           onVoteSubmitted={onVoteSubmitted}
+          sessionId={sessionId}
         />
+        
+        {/* User Badges Section */}
+        {sessionId && (
+          <div className="mb-8 bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+            <UserBadges sessionId={sessionId} />
+          </div>
+        )}
         
         <Rankings />
       </main>
