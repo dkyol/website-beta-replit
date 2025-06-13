@@ -17,6 +17,19 @@ export const votes = pgTable("votes", {
   id: serial("id").primaryKey(),
   concertId: integer("concert_id").notNull(),
   voteType: text("vote_type").notNull(), // 'excited' or 'interested'
+  sessionId: text("session_id"), // Track user sessions for badges
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const userSessions = pgTable("user_sessions", {
+  id: serial("id").primaryKey(),
+  sessionId: text("session_id").notNull().unique(),
+  totalVotes: integer("total_votes").default(0).notNull(),
+  excitedVotes: integer("excited_votes").default(0).notNull(),
+  interestedVotes: integer("interested_votes").default(0).notNull(),
+  uniqueConcertsVoted: integer("unique_concerts_voted").default(0).notNull(),
+  firstVoteAt: timestamp("first_vote_at"),
+  lastVoteAt: timestamp("last_vote_at"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -29,10 +42,17 @@ export const insertVoteSchema = createInsertSchema(votes).omit({
   createdAt: true,
 });
 
+export const insertUserSessionSchema = createInsertSchema(userSessions).omit({
+  id: true,
+  createdAt: true,
+});
+
 export type InsertConcert = z.infer<typeof insertConcertSchema>;
 export type Concert = typeof concerts.$inferSelect;
 export type InsertVote = z.infer<typeof insertVoteSchema>;
 export type Vote = typeof votes.$inferSelect;
+export type InsertUserSession = z.infer<typeof insertUserSessionSchema>;
+export type UserSession = typeof userSessions.$inferSelect;
 
 export interface ConcertWithVotes extends Concert {
   excitedVotes: number;
@@ -42,4 +62,20 @@ export interface ConcertWithVotes extends Concert {
   rank: number;
   previousRank?: number;
   rankChange?: number;
+}
+
+// Badge types for fan engagement
+export interface Badge {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  color: string;
+  requirement: (session: UserSession) => boolean;
+}
+
+export interface UserBadges {
+  sessionId: string;
+  badges: Badge[];
+  session: UserSession;
 }
