@@ -10,6 +10,7 @@ import bannerImage from "@assets/Screenshot 2025-06-12 232843_1749785388266.png"
 export default function Home() {
   const [currentConcertIndex, setCurrentConcertIndex] = useState(0);
   const [userVotes, setUserVotes] = useState<Set<number>>(new Set());
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const { data: allConcerts, isLoading } = useQuery<Concert[]>({
     queryKey: ['/api/concerts'],
@@ -38,6 +39,15 @@ export default function Home() {
   };
 
   const { timeLeft, reset: resetTimer } = useTimer(7, nextConcert);
+
+  // Initialize with random concert on first load
+  useEffect(() => {
+    if (concerts.length > 0 && !isInitialized) {
+      const randomIndex = Math.floor(Math.random() * concerts.length);
+      setCurrentConcertIndex(randomIndex);
+      setIsInitialized(true);
+    }
+  }, [concerts.length, isInitialized]);
 
   // Only reset index if it's out of bounds
   useEffect(() => {
