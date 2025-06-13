@@ -25,12 +25,6 @@ export default function Home() {
   const concerts = useMemo(() => {
     if (!allConcerts) return [];
     const futureConcerts = filterFutureConcerts(allConcerts);
-    console.log('Date filtering results:', {
-      totalConcerts: allConcerts.length,
-      futureConcerts: futureConcerts.length,
-      pastConcerts: allConcerts.length - futureConcerts.length,
-      concertDates: allConcerts.map(c => ({ id: c.id, title: c.title, date: c.date }))
-    });
     return futureConcerts.length > 0 ? futureConcerts : allConcerts;
   }, [allConcerts]);
   
