@@ -45,7 +45,9 @@ export function FeaturedConcert({ concert, timeLeft, voteStats, onVoteSubmitted 
       // Immediately advance to next concert
       if (onVoteSubmitted) {
         console.log('Calling onVoteSubmitted callback');
-        onVoteSubmitted();
+        setTimeout(() => {
+          onVoteSubmitted();
+        }, 100); // Small delay to ensure state updates complete
       } else {
         console.log('onVoteSubmitted callback not provided');
       }
