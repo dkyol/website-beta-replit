@@ -4,7 +4,7 @@ import { FeaturedConcert } from "@/components/featured-concert";
 import { Rankings } from "@/components/rankings";
 import { useTimer } from "@/hooks/use-timer";
 import type { Concert } from "@shared/schema";
-import bannerImage from "@assets/image_1749781951700.png";
+import bannerImage from "@assets/Screenshot 2025-06-12 232843_1749785388266.png";
 
 export default function Home() {
   const [currentConcertIndex, setCurrentConcertIndex] = useState(0);
