@@ -139,7 +139,7 @@ export function FeaturedConcert({ concert, timeLeft, voteStats, onVoteSubmitted 
                     className="w-full py-4 px-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                     size="lg"
                   >
-                    🎹 Very Excited! <span className="text-blue-200">(2 points)</span>
+                    🎹 Very Excited!
                   </Button>
                   
                   <Button
@@ -148,7 +148,7 @@ export function FeaturedConcert({ concert, timeLeft, voteStats, onVoteSubmitted 
                     className="w-full py-4 px-6 bg-slate-600 hover:bg-slate-700 text-white font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                     size="lg"
                   >
-                    🎵 Somewhat Interested <span className="text-slate-300">(1 point)</span>
+                    🎵 Somewhat Interested
                   </Button>
                 </div>
                 
