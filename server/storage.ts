@@ -1,14 +1,18 @@
-import { concerts, votes, type Concert, type InsertConcert, type Vote, type InsertVote, type ConcertWithVotes } from "@shared/schema";
+import { concerts, votes, userSessions, type Concert, type InsertConcert, type Vote, type InsertVote, type ConcertWithVotes, type UserSession, type InsertUserSession, type UserBadges } from "@shared/schema";
 import { db } from "./db";
-import { eq, sql } from "drizzle-orm";
+import { eq, sql, count, countDistinct } from "drizzle-orm";
+import { calculateUserBadges } from "@shared/badges";
 
 export interface IStorage {
   getConcerts(): Promise<Concert[]>;
   getConcertById(id: number): Promise<Concert | undefined>;
   createConcert(concert: InsertConcert): Promise<Concert>;
-  vote(vote: InsertVote): Promise<Vote>;
+  vote(vote: InsertVote, sessionId: string): Promise<Vote>;
   getVoteStats(): Promise<{ [concertId: number]: { excited: number; interested: number } }>;
   getConcertsWithVotes(): Promise<ConcertWithVotes[]>;
+  getUserSession(sessionId: string): Promise<UserSession | undefined>;
+  createOrUpdateUserSession(sessionId: string): Promise<UserSession>;
+  getUserBadges(sessionId: string): Promise<UserBadges>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -107,11 +111,16 @@ export class DatabaseStorage implements IStorage {
     return newConcert;
   }
 
-  async vote(vote: InsertVote): Promise<Vote> {
+  async vote(vote: InsertVote, sessionId: string): Promise<Vote> {
+    // Create the vote with session tracking
     const [newVote] = await db
       .insert(votes)
-      .values(vote)
+      .values({ ...vote, sessionId })
       .returning();
+    
+    // Update user session statistics after vote
+    await this.createOrUpdateUserSession(sessionId);
+    
     return newVote;
   }
 
@@ -177,6 +186,93 @@ export class DatabaseStorage implements IStorage {
     });
 
     return concertsWithVotes;
+  }
+
+  async getUserSession(sessionId: string): Promise<UserSession | undefined> {
+    const [session] = await db.select().from(userSessions).where(eq(userSessions.sessionId, sessionId));
+    return session || undefined;
+  }
+
+
+
+  async createOrUpdateUserSession(sessionId: string): Promise<UserSession> {
+    // Get current session stats by querying votes
+    const sessionVotes = await db
+      .select({
+        totalVotes: count(),
+        excitedVotes: sql<number>`sum(case when ${votes.voteType} = 'excited' then 1 else 0 end)`,
+        interestedVotes: sql<number>`sum(case when ${votes.voteType} = 'interested' then 1 else 0 end)`,
+        uniqueConcerts: countDistinct(votes.concertId)
+      })
+      .from(votes)
+      .where(eq(votes.sessionId, sessionId));
+
+    const stats = sessionVotes[0] || { totalVotes: 0, excitedVotes: 0, interestedVotes: 0, uniqueConcerts: 0 };
+
+    // Check if session exists
+    const existingSession = await this.getUserSession(sessionId);
+    
+    if (existingSession) {
+      // Update existing session
+      const [updatedSession] = await db
+        .update(userSessions)
+        .set({
+          totalVotes: stats.totalVotes,
+          excitedVotes: stats.excitedVotes,
+          interestedVotes: stats.interestedVotes,
+          uniqueConcertsVoted: stats.uniqueConcerts,
+          lastVoteAt: new Date()
+        })
+        .where(eq(userSessions.sessionId, sessionId))
+        .returning();
+      return updatedSession;
+    } else {
+      // Create new session
+      const [newSession] = await db
+        .insert(userSessions)
+        .values({
+          sessionId,
+          totalVotes: stats.totalVotes,
+          excitedVotes: stats.excitedVotes,
+          interestedVotes: stats.interestedVotes,
+          uniqueConcertsVoted: stats.uniqueConcerts,
+          firstVoteAt: new Date(),
+          lastVoteAt: new Date()
+        })
+        .returning();
+      return newSession;
+    }
+  }
+
+  async getUserBadges(sessionId: string): Promise<UserBadges> {
+    const session = await this.getUserSession(sessionId);
+    
+    if (!session) {
+      // Return empty badges for non-existent sessions
+      return {
+        sessionId,
+        badges: [],
+        session: {
+          id: 0,
+          sessionId,
+          totalVotes: 0,
+          excitedVotes: 0,
+          interestedVotes: 0,
+          uniqueConcertsVoted: 0,
+          firstVoteAt: null,
+          lastVoteAt: null,
+          createdAt: null
+        }
+      };
+    }
+
+    const badges = calculateUserBadges(session);
+    
+    return {
+      sessionId,
+      badges,
+      session
+    };
   }
 }
 
