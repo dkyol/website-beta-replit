@@ -6,6 +6,7 @@ import { useTimer } from "@/hooks/use-timer";
 import { filterFutureConcerts } from "@/lib/dateUtils";
 import type { Concert } from "@shared/schema";
 import bannerImage from "@assets/Screenshot 2025-06-12 232843_1749785388266.png";
+import sightTuneLogo from "@assets/SightTune_Logo_1749825598124.png";
 
 export default function Home() {
   const [currentConcertIndex, setCurrentConcertIndex] = useState(0);
@@ -132,6 +133,21 @@ export default function Home() {
         
         <Rankings />
       </main>
+      
+      {/* Sponsor Footer */}
+      <footer className="bg-white border-t border-slate-200 py-6 mt-12">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="flex items-center justify-center space-x-3 text-slate-600">
+            <span className="text-sm">Sponsored by</span>
+            <img 
+              src={sightTuneLogo} 
+              alt="SightTune Music Technology" 
+              className="h-8 w-auto opacity-80 hover:opacity-100 transition-opacity"
+            />
+            <span className="text-sm font-medium">SightTune</span>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
