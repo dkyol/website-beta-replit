@@ -48,7 +48,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const vote = await storage.vote(validatedData);
       res.json(vote);
-    } catch (error) {
+    } catch (error: any) {
       if (error.name === 'ZodError') {
         return res.status(400).json({ error: "Invalid vote data" });
       }
