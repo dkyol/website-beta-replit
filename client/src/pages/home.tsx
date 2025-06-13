@@ -4,6 +4,7 @@ import { FeaturedConcert } from "@/components/featured-concert";
 import { Rankings } from "@/components/rankings";
 import { useTimer } from "@/hooks/use-timer";
 import type { Concert } from "@shared/schema";
+import bannerImage from "@assets/image_1749781951700.png";
 
 export default function Home() {
   const [currentConcertIndex, setCurrentConcertIndex] = useState(0);
@@ -38,14 +39,22 @@ export default function Home() {
   if (isLoading || !concerts || concerts.length === 0) {
     return (
       <div className="min-h-screen bg-slate-50">
-        <header className="bg-white shadow-sm border-b border-slate-200">
-          <div className="max-w-6xl mx-auto px-4 py-6">
+        <header 
+          className="relative bg-cover bg-center bg-no-repeat shadow-sm border-b border-slate-200"
+          style={{
+            backgroundImage: `url(${bannerImage})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center'
+          }}
+        >
+          <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+          <div className="relative max-w-6xl mx-auto px-4 py-12">
             <div className="text-center">
-              <h1 className="text-3xl md:text-4xl font-bold text-slate-800 mb-2">
-                DC Piano Concert Rankings
+              <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+                Enjoy Classical Music!
               </h1>
-              <p className="text-slate-600 font-medium">
-                Vote for the upcoming performances you're most excited about
+              <p className="text-white font-medium">
+                Vote for your favorite artist
               </p>
             </div>
           </div>
@@ -68,14 +77,22 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <header className="bg-white shadow-sm border-b border-slate-200">
-        <div className="max-w-6xl mx-auto px-4 py-6">
+      <header 
+        className="relative bg-cover bg-center bg-no-repeat shadow-sm border-b border-slate-200"
+        style={{
+          backgroundImage: `url(${bannerImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
+        }}
+      >
+        <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+        <div className="relative max-w-6xl mx-auto px-4 py-12">
           <div className="text-center">
-            <h1 className="text-3xl md:text-4xl font-bold text-slate-800 mb-2">
-              DC Piano Concert Rankings
+            <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+              Enjoy Classical Music!
             </h1>
-            <p className="text-slate-600 font-medium">
-              Vote for the upcoming performances you're most excited about
+            <p className="text-white font-medium">
+              Vote for your favorite artist
             </p>
           </div>
         </div>
