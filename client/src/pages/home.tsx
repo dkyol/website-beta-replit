@@ -20,12 +20,8 @@ export default function Home() {
     refetchInterval: 2000, // Refetch every 2 seconds for real-time vote updates
   });
 
-  // Filter for future concerts only for featured rotation
-  const concerts = useMemo(() => {
-    if (!allConcerts) return [];
-    const futureConcerts = filterFutureConcerts(allConcerts);
-    return futureConcerts.length > 0 ? futureConcerts : allConcerts;
-  }, [allConcerts]);
+  // Use all concerts for featured rotation (all are future events)
+  const concerts = allConcerts || [];
   
   const nextConcert = () => {
     if (concerts && concerts.length > 0) {
