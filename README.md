@@ -1,4 +1,4 @@
-# DC Piano Concert Voting Application
+# Enjoy Classical Music
 
 ## Overview
 An interactive voting application for piano concerts featuring automatic 30-second rotations, real-time ranking displays, and persistent data storage. Users can vote on their favorite upcoming piano performances in the Washington DC area.
