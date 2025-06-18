@@ -153,6 +153,21 @@ export function FeaturedConcert({ concert, timeLeft, voteStats, onVoteSubmitted,
                     <span className="font-semibold text-slate-700">Organizer:</span>
                     <span className="text-slate-600">{concert.organizer}</span>
                   </div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-slate-700">Location:</span>
+                    <span className="text-slate-600">{concert.location}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-slate-700">Tickets:</span>
+                    <a 
+                      href={concert.concertLink} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                    >
+                      Buy on Eventbrite
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
