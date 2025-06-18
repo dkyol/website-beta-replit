@@ -34,6 +34,8 @@ class ConcertData(BaseModel):
     organizer: str
     description: str
     image_url: str
+    concert_link: str
+    location: str
 
 def get_db_connection():
     """Create and return a database connection"""
@@ -47,7 +49,7 @@ def get_db_connection():
 
 def validate_csv_headers(headers):
     """Validate that CSV has required headers"""
-    required_headers = ['title', 'date', 'venue', 'price', 'organizer', 'description', 'image_url']
+    required_headers = ['title', 'date', 'venue', 'price', 'organizer', 'description', 'image_url', 'concert_link', 'location']
     missing_headers = [h for h in required_headers if h not in headers]
     
     if missing_headers:
@@ -76,7 +78,9 @@ def read_csv_file(file_path):
                         price=row['price'].strip(),
                         organizer=row['organizer'].strip(),
                         description=row['description'].strip(),
-                        image_url=row['image_url'].strip()
+                        image_url=row['image_url'].strip(),
+                        concert_link=row['concert_link'].strip(),
+                        location=row['location'].strip()
                     )
                     concerts.append(concert_data)
                     
@@ -112,8 +116,8 @@ def insert_concert(conn, concert_data):
         
         # Insert new concert
         cur.execute("""
-            INSERT INTO concerts (title, date, venue, price, organizer, description, image_url)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO concerts (title, date, venue, price, organizer, description, image_url, concert_link, location)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
             RETURNING id
         """, (
             concert_data.title,
@@ -122,7 +126,9 @@ def insert_concert(conn, concert_data):
             concert_data.price,
             concert_data.organizer,
             concert_data.description,
-            concert_data.image_url
+            concert_data.image_url,
+            concert_data.concert_link,
+            concert_data.location
         ))
         
         concert_id = cur.fetchone()[0]
@@ -195,7 +201,7 @@ def create_sample_csv(file_path="sample_concerts.csv"):
     ]
     
     with open(file_path, 'w', newline='', encoding='utf-8') as file:
-        writer = csv.DictWriter(file, fieldnames=['title', 'date', 'venue', 'price', 'organizer', 'description', 'image_url'])
+        writer = csv.DictWriter(file, fieldnames=['title', 'date', 'venue', 'price', 'organizer', 'description', 'image_url', 'concert_link', 'location'])
         writer.writeheader()
         writer.writerows(sample_data)
     
