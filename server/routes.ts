@@ -1,9 +1,18 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import path from "path";
 import { storage } from "./storage";
 import { insertVoteSchema } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Serve social media Open Graph image
+  app.get("/og-image.png", (req, res) => {
+    const imagePath = path.join(process.cwd(), "attached_assets", "SightTune_Logo_no words_1749825929879.png");
+    res.setHeader('Content-Type', 'image/png');
+    res.setHeader('Cache-Control', 'public, max-age=31536000');
+    res.sendFile(imagePath);
+  });
+
   // Get all concerts
   app.get("/api/concerts", async (req, res) => {
     try {
