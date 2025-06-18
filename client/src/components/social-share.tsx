@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Share2, Facebook, Twitter, Instagram, Copy, Check } from "lucide-react";
-import sightTuneLogo from "@assets/SightTune_Logo_1749825598124.png";
+import sightTuneLogo from "@assets/SightTune_Logo_no words_1749825929879.png";
 import type { Concert } from "@shared/schema";
 
 interface SocialShareProps {
