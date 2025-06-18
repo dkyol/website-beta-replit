@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Share2, Facebook, Twitter, Instagram, Copy, Check } from "lucide-react";
+import sightTuneLogo from "@assets/SightTune_Logo_1749825598124.png";
 import type { Concert } from "@shared/schema";
 
 interface SocialShareProps {
@@ -21,12 +22,14 @@ export function SocialShare({ concert, isOpen, onClose }: SocialShareProps) {
   
 Join the classical music community and vote for your favorite concerts at SightTune.`;
 
-  const shareUrl = window.location.origin;
+  const shareUrl = "https://enjoyclassicalmusic.replit.app/";
+  const logoUrl = `${window.location.origin}${sightTuneLogo}`;
   const encodedText = encodeURIComponent(shareText);
   const encodedUrl = encodeURIComponent(shareUrl);
+  const encodedLogoUrl = encodeURIComponent(logoUrl);
 
   const socialLinks = {
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedText}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedText}&picture=${encodedLogoUrl}`,
     twitter: `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`,
     instagram: `https://www.instagram.com/`, // Instagram doesn't support direct text sharing
     linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}&summary=${encodedText}`
