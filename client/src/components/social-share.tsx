@@ -23,7 +23,7 @@ export function SocialShare({ concert, isOpen, onClose }: SocialShareProps) {
 Join the classical music community and vote for your favorite concerts at SightTune.`;
 
   const shareUrl = "https://enjoyclassicalmusic.replit.app/";
-  const logoUrl = `${window.location.origin}${sightTuneLogo}`;
+  const logoUrl = "https://enjoyclassicalmusic.replit.app/attached_assets/SightTune_Logo_no words_1749825929879.png";
   const encodedText = encodeURIComponent(shareText);
   const encodedUrl = encodeURIComponent(shareUrl);
   const encodedLogoUrl = encodeURIComponent(logoUrl);
