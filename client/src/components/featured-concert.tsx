@@ -8,6 +8,8 @@ import { useToast } from "@/hooks/use-toast";
 import { PianoFallback } from "./piano-fallback";
 import { VoteAnimation, FloatingVoteIndicator, PulseVoteButton } from "./vote-animation";
 import { AnimatedVoteCounter, VoteProgressBar } from "./animated-vote-counter";
+import { SocialShare } from "./social-share";
+import { Share2 } from "lucide-react";
 import type { Concert, ConcertWithVotes } from "@shared/schema";
 
 interface FeaturedConcertProps {
@@ -25,6 +27,7 @@ export function FeaturedConcert({ concert, timeLeft, voteStats, onVoteSubmitted,
   const [floatingPosition, setFloatingPosition] = useState({ x: 0, y: 0 });
   const [previousStats, setPreviousStats] = useState({ excited: 0, interested: 0 });
   const [imageError, setImageError] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -157,16 +160,27 @@ export function FeaturedConcert({ concert, timeLeft, voteStats, onVoteSubmitted,
                     <span className="font-semibold text-slate-700">Location:</span>
                     <span className="text-slate-600">{concert.location}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-slate-700">Tickets:</span>
-                    <a 
-                      href={concert.concertLink} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-slate-700">Tickets:</span>
+                      <a 
+                        href={concert.concertLink} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                      >
+                        Buy on Eventbrite
+                      </a>
+                    </div>
+                    <Button
+                      onClick={() => setShowShareModal(true)}
+                      variant="outline"
+                      size="sm"
+                      className="flex items-center gap-1"
                     >
-                      Buy on Eventbrite
-                    </a>
+                      <Share2 className="w-4 h-4" />
+                      Share
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -247,6 +261,13 @@ export function FeaturedConcert({ concert, timeLeft, voteStats, onVoteSubmitted,
           position={floatingPosition}
         />
       )}
+      
+      {/* Social Share Modal */}
+      <SocialShare 
+        concert={concert}
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+      />
     </motion.div>
   );
 }
