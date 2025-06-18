@@ -291,16 +291,16 @@ export default function Home() {
             </div>
           </div>
           
-          <div className="border-t border-slate-700 pt-8">
-            <div className="flex items-center justify-between flex-wrap gap-4">
-              <div className="flex items-center space-x-3">
-                <span className="text-sm">Powered by</span>
+          <div className="border-t border-slate-700 pt-8 space-y-6">
+            <div className="flex items-center justify-between flex-wrap gap-6">
+              <div className="flex items-center space-x-4">
+                <span className="text-sm text-slate-300">Powered by</span>
                 <img 
                   src={sightTuneLogo} 
                   alt="SightTune - Classical Music Discovery Platform" 
-                  className="h-12 w-auto opacity-80 hover:opacity-100 transition-opacity"
+                  className="h-10 w-auto opacity-90 hover:opacity-100 transition-opacity"
                 />
-                <span className="font-bold text-lg">SightTune</span>
+                <span className="font-bold text-xl text-white">SightTune</span>
               </div>
               
               <div className="text-sm text-slate-400">
@@ -308,7 +308,7 @@ export default function Home() {
               </div>
             </div>
             
-            <div className="mt-6 text-center text-sm text-slate-400">
+            <div className="text-center text-sm text-slate-400 leading-relaxed max-w-4xl mx-auto px-4">
               <p>
                 Find classical music concerts, piano recitals, chamber music, and orchestral performances. 
                 Join our community of music enthusiasts and discover your next favorite artist.
