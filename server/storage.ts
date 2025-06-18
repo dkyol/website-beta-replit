@@ -185,7 +185,8 @@ export class DatabaseStorage implements IStorage {
       this.previousRanks.set(concert.id, currentRank);
     });
 
-    return concertsWithVotes;
+    // Return only top 10 concerts
+    return concertsWithVotes.slice(0, 10);
   }
 
   async getUserSession(sessionId: string): Promise<UserSession | undefined> {
