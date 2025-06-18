@@ -1,24 +1,119 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
-    <title>DC Piano Concert Rankings - Vote for Your Favorites</title>
-    <meta name="description" content="Vote for your favorite upcoming piano concerts in Washington DC. Real-time rankings and voting on classical music performances, recitals, and chamber music events." />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1"
+    />
     
-    <!-- Open Graph tags for social sharing -->
-    <meta property="og:title" content="DC Piano Concert Rankings - Vote for Your Favorites" />
-    <meta property="og:description" content="Vote for your favorite upcoming piano concerts in Washington DC. Real-time rankings and voting on classical music performances, recitals, and chamber music events." />
+    <!-- Primary SEO Meta Tags -->
+    <title>Classical Music Concerts Near Me | Piano Recitals & Chamber Music Events | SightTune</title>
+    <meta
+      name="description"
+      content="Find and attend the best classical music concerts, piano recitals, and chamber music performances. Vote for upcoming events, discover talented artists, and get tickets to classical concerts in your area. Real-time rankings powered by music lovers."
+    />
+    <meta
+      name="keywords"
+      content="classical music concerts, piano recitals, chamber music, classical concerts near me, concert tickets, piano performances, classical music events, orchestral concerts, violin recitals, cello performances, opera, symphony concerts, music festivals, classical artists, concert venues, live classical music"
+    />
+    <meta name="author" content="SightTune" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <meta name="language" content="en-US" />
+    <meta name="revisit-after" content="1 day" />
+    
+    <!-- Geographic targeting -->
+    <meta name="geo.region" content="US" />
+    <meta name="geo.placename" content="United States" />
+    
+    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://sighttune.com" />
+    <meta property="og:title" content="Find Classical Music Concerts & Piano Recitals Near You | SightTune" />
+    <meta property="og:description" content="Discover amazing classical music concerts, piano recitals, and chamber music performances. Vote for your favorites and find the best classical events happening near you." />
+    <meta property="og:image" content="https://sighttune.com/classical-concert-preview.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Classical music concert hall with piano performance" />
+    <meta property="og:site_name" content="SightTune" />
+    <meta property="og:locale" content="en_US" />
     
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://sighttune.com" />
+    <meta name="twitter:title" content="Find Classical Music Concerts & Piano Recitals Near You" />
+    <meta name="twitter:description" content="Discover amazing classical music concerts, piano recitals, and chamber music performances. Vote for your favorites and find the best classical events." />
+    <meta name="twitter:image" content="https://sighttune.com/classical-concert-preview.jpg" />
+    <meta name="twitter:creator" content="@SightTune" />
+    
+    <!-- Additional SEO Meta Tags -->
+    <meta name="theme-color" content="#1e293b" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="SightTune" />
+    
+    <!-- Schema.org structured data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "SightTune",
+      "description": "The premier platform for discovering classical music concerts, piano recitals, and chamber music performances",
+      "url": "https://sighttune.com",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://sighttune.com/search?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      },
+      "sameAs": [
+        "https://twitter.com/sighttune",
+        "https://facebook.com/sighttune",
+        "https://instagram.com/sighttune"
+      ]
+    }
+    </script>
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "SightTune",
+      "description": "Connecting classical music lovers with concerts, recitals, and performances worldwide",
+      "url": "https://sighttune.com",
+      "logo": "https://sighttune.com/logo.png",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer service",
+        "email": "info@sighttune.com"
+      }
+    }
+    </script>
+
     <!-- Preconnect to improve loading performance -->
     <link rel="preconnect" href="https://images.unsplash.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://sighttune.com" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     <!-- This is a replit script which adds a banner on the top of the page when opened in development mode outside the replit environment -->
-    <script type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js"></script>
+    <script
+      type="text/javascript"
+      src="https://replit.com/public/js/replit-dev-banner.js"
+    ></script>
   </body>
 </html>
