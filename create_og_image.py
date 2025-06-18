@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Create a proper Open Graph image for SightTune social media sharing
+Create a proper Open Graph image for SightTune social media sharing using the actual logo
 """
 
 from PIL import Image, ImageDraw, ImageFont
@@ -13,68 +13,38 @@ def create_og_image():
     # Create image with dark background
     bg_color = (26, 26, 26)  # Dark gray
     img = Image.new('RGB', (width, height), bg_color)
+    
+    # Try to open and use the actual SightTune logo
+    try:
+        logo_path = "attached_assets/SightTune_Logo_no words_1749825929879.png"
+        logo = Image.open(logo_path)
+        
+        # Resize logo to fit nicely in the social media image
+        logo_max_size = 200
+        logo.thumbnail((logo_max_size, logo_max_size), Image.Resampling.LANCZOS)
+        
+        # Calculate position to center the logo
+        logo_x = (width - logo.width) // 2
+        logo_y = (height - logo.height) // 2 - 80
+        
+        # If the logo has transparency, paste it properly
+        if logo.mode in ('RGBA', 'LA'):
+            img.paste(logo, (logo_x, logo_y), logo)
+        else:
+            img.paste(logo, (logo_x, logo_y))
+        
+        center_y_text = logo_y + logo.height + 40
+        
+    except Exception as e:
+        print(f"Could not load logo: {e}")
+        # Fallback: create a simple text-only version
+        center_y_text = height // 2
+    
     draw = ImageDraw.Draw(img)
     
     # Colors
     white = (255, 255, 255)
     light_gray = (204, 204, 204)
-    
-    # Draw owl silhouette (simplified)
-    center_x, center_y = width // 2, height // 2 - 50
-    
-    # Owl body (circle)
-    owl_size = 120
-    draw.ellipse([
-        center_x - owl_size, center_y - owl_size,
-        center_x + owl_size, center_y + owl_size
-    ], fill=white)
-    
-    # Owl eyes
-    eye_size = 25
-    eye_offset = 40
-    # Left eye
-    draw.ellipse([
-        center_x - eye_offset - eye_size, center_y - 30 - eye_size,
-        center_x - eye_offset + eye_size, center_y - 30 + eye_size
-    ], fill=bg_color)
-    # Right eye
-    draw.ellipse([
-        center_x + eye_offset - eye_size, center_y - 30 - eye_size,
-        center_x + eye_offset + eye_size, center_y - 30 + eye_size
-    ], fill=bg_color)
-    
-    # Eye highlights
-    highlight_size = 8
-    draw.ellipse([
-        center_x - eye_offset - highlight_size, center_y - 30 - highlight_size,
-        center_x - eye_offset + highlight_size, center_y - 30 + highlight_size
-    ], fill=white)
-    draw.ellipse([
-        center_x + eye_offset - highlight_size, center_y - 30 - highlight_size,
-        center_x + eye_offset + highlight_size, center_y - 30 + highlight_size
-    ], fill=white)
-    
-    # Owl beak
-    beak_points = [
-        (center_x, center_y + 10),
-        (center_x - 15, center_y + 35),
-        (center_x + 15, center_y + 35)
-    ]
-    draw.polygon(beak_points, fill=white)
-    
-    # Ear tufts
-    tuft_points_left = [
-        (center_x - 60, center_y - 120),
-        (center_x - 100, center_y - 160),
-        (center_x - 40, center_y - 140)
-    ]
-    tuft_points_right = [
-        (center_x + 60, center_y - 120),
-        (center_x + 100, center_y - 160),
-        (center_x + 40, center_y - 140)
-    ]
-    draw.polygon(tuft_points_left, fill=white)
-    draw.polygon(tuft_points_right, fill=white)
     
     # Add text
     try:
@@ -91,7 +61,7 @@ def create_og_image():
     title_bbox = draw.textbbox((0, 0), title_text, font=title_font)
     title_width = title_bbox[2] - title_bbox[0]
     title_x = (width - title_width) // 2
-    title_y = center_y + 160
+    title_y = center_y_text
     draw.text((title_x, title_y), title_text, fill=white, font=title_font)
     
     # Subtitle
@@ -104,7 +74,7 @@ def create_og_image():
     
     # Save the image
     img.save('og-image.png', 'PNG', quality=95)
-    print("Created og-image.png")
+    print("Created og-image.png with actual SightTune logo")
 
 if __name__ == "__main__":
     create_og_image()
