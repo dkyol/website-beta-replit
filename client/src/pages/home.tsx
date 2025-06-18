@@ -243,7 +243,7 @@ export default function Home() {
       </main>
       
       {/* Enhanced SEO Footer */}
-      <footer className="bg-slate-800 text-white py-12 mt-12" role="contentinfo">
+      <footer className="bg-slate-900 text-white py-16 mt-12" role="contentinfo">
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
@@ -291,24 +291,24 @@ export default function Home() {
             </div>
           </div>
           
-          <div className="border-t border-slate-700 pt-8 space-y-6">
-            <div className="flex items-center justify-between flex-wrap gap-6">
-              <div className="flex items-center space-x-4">
-                <span className="text-sm text-slate-300">Powered by</span>
+          <div className="border-t border-slate-700 pt-10 space-y-8">
+            <div className="flex items-center justify-between flex-wrap gap-8">
+              <div className="flex items-center space-x-5">
+                <span className="text-base text-slate-300">Powered by</span>
                 <img 
                   src={sightTuneLogo} 
                   alt="SightTune - Classical Music Discovery Platform" 
-                  className="h-10 w-auto opacity-90 hover:opacity-100 transition-opacity"
+                  className="h-12 w-auto opacity-90 hover:opacity-100 transition-opacity"
                 />
-                <span className="font-bold text-xl text-white">SightTune</span>
+                <span className="font-bold text-2xl text-white">SightTune</span>
               </div>
               
-              <div className="text-sm text-slate-400">
+              <div className="text-base text-slate-400">
                 <p>&copy; 2025 SightTune. Connecting classical music lovers worldwide.</p>
               </div>
             </div>
             
-            <div className="text-center text-sm text-slate-400 leading-relaxed max-w-4xl mx-auto px-4">
+            <div className="text-center text-base text-slate-300 leading-relaxed max-w-5xl mx-auto px-8 py-4 bg-slate-800 rounded-lg">
               <p>
                 Find classical music concerts, piano recitals, chamber music, and orchestral performances. 
                 Join our community of music enthusiasts and discover your next favorite artist.
