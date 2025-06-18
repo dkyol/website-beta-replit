@@ -292,6 +292,13 @@ export default function Home() {
           </div>
           
           <div className="border-t border-slate-700 pt-10 space-y-8">
+            <div className="text-center text-base text-slate-300 leading-relaxed max-w-5xl mx-auto px-8 py-4 bg-slate-800 rounded-lg">
+              <p>
+                Find classical music concerts, piano recitals, chamber music, and orchestral performances. 
+                Join our community of music enthusiasts and discover your next favorite artist.
+              </p>
+            </div>
+            
             <div className="flex items-center justify-between flex-wrap gap-8">
               <div className="flex items-center space-x-5">
                 <span className="text-base text-slate-300">Powered by</span>
@@ -304,15 +311,8 @@ export default function Home() {
               </div>
               
               <div className="text-base text-slate-400">
-                <p>&copy; 2025 SightTune. Connecting classical music lovers worldwide.</p>
+                <p>&copy; 2024 SightTune. Connecting classical music lovers worldwide.</p>
               </div>
-            </div>
-            
-            <div className="text-center text-base text-slate-300 leading-relaxed max-w-5xl mx-auto px-8 py-4 bg-slate-800 rounded-lg">
-              <p>
-                Find classical music concerts, piano recitals, chamber music, and orchestral performances. 
-                Join our community of music enthusiasts and discover your next favorite artist.
-              </p>
             </div>
           </div>
         </div>
