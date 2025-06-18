@@ -187,7 +187,9 @@ def create_sample_csv(file_path="sample_concerts.csv"):
             'price': 'From $25.00',
             'organizer': 'Washington Piano Society',
             'description': 'An evening of classical piano music featuring works by Chopin, Debussy, and Rachmaninoff.',
-            'image_url': 'https://example.com/sample-concert-image.jpg'
+            'image_url': 'https://example.com/sample-concert-image.jpg',
+            'concert_link': 'https://www.eventbrite.com/d/dc--washington/classical-concert/',
+            'location': 'DC'
         },
         {
             'title': 'Jazz Piano Night',
@@ -196,7 +198,9 @@ def create_sample_csv(file_path="sample_concerts.csv"):
             'price': 'From $35.00',
             'organizer': 'DC Jazz Collective',
             'description': 'Contemporary jazz piano performances featuring local and touring artists.',
-            'image_url': 'https://example.com/jazz-piano-image.jpg'
+            'image_url': 'https://example.com/jazz-piano-image.jpg',
+            'concert_link': 'https://www.eventbrite.com/d/dc--washington/classical-concert/',
+            'location': 'DC'
         }
     ]
     
