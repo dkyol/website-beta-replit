@@ -3,7 +3,9 @@ import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, MapPin, Users } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Calendar, MapPin, Users, Share2 } from "lucide-react";
+import { SocialShare } from "@/components/social-share";
 import type { Concert } from "@shared/schema";
 
 interface ConcertSearchProps {
@@ -14,6 +16,8 @@ export function ConcertSearch({ concerts }: ConcertSearchProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [dateRange, setDateRange] = useState([0, 365]); // Days from today into the future
   const [submittedQuery, setSubmittedQuery] = useState("");
+  const [shareDialogOpen, setShareDialogOpen] = useState(false);
+  const [selectedConcert, setSelectedConcert] = useState<Concert | null>(null);
 
   // Calculate date boundaries
   const today = new Date();
@@ -76,6 +80,16 @@ export function ConcertSearch({ concerts }: ConcertSearchProps) {
     if (e.key === 'Enter') {
       handleSearchSubmit();
     }
+  };
+
+  const handleShareClick = (concert: Concert) => {
+    setSelectedConcert(concert);
+    setShareDialogOpen(true);
+  };
+
+  const handleCloseShare = () => {
+    setShareDialogOpen(false);
+    setSelectedConcert(null);
   };
 
   const formatDate = (dateString: string) => {
@@ -232,16 +246,27 @@ export function ConcertSearch({ concerts }: ConcertSearchProps) {
                       <span className="text-sm font-medium text-slate-800">
                         {concert.price}
                       </span>
-                      {concert.concertLink && (
-                        <a
-                          href={concert.concertLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                      <div className="flex items-center gap-2">
+                        <Button
+                          onClick={() => handleShareClick(concert)}
+                          variant="outline"
+                          size="sm"
+                          className="text-xs px-2 py-1 h-7"
                         >
-                          View Details →
-                        </a>
-                      )}
+                          <Share2 className="w-3 h-3 mr-1" />
+                          Share
+                        </Button>
+                        {concert.concertLink && (
+                          <a
+                            href={concert.concertLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                          >
+                            View Details →
+                          </a>
+                        )}
+                      </div>
                     </div>
 
                     {concert.description && (
@@ -256,6 +281,15 @@ export function ConcertSearch({ concerts }: ConcertSearchProps) {
           </div>
         )}
       </div>
+
+      {/* Social Share Dialog */}
+      {selectedConcert && (
+        <SocialShare 
+          concert={selectedConcert}
+          isOpen={shareDialogOpen}
+          onClose={handleCloseShare}
+        />
+      )}
     </div>
   );
 }
