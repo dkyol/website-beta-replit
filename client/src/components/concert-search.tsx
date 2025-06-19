@@ -34,7 +34,21 @@ export function ConcertSearch({ concerts }: ConcertSearchProps) {
       // Date filter - parse various date formats
       let matchesDate = true; // Default to true if date parsing fails
       try {
-        const concertDate = new Date(concert.date);
+        let concertDate = new Date(concert.date);
+        
+        // If invalid, try parsing specific formats
+        if (isNaN(concertDate.getTime())) {
+          // Handle formats like "Thursday, December 15, 2024 at 7:00 PM"
+          const cleanedDate = concert.date.replace(/at\s+/, '');
+          concertDate = new Date(cleanedDate);
+        }
+        
+        if (isNaN(concertDate.getTime())) {
+          // Handle formats like "Fri, Jul 18, 7:30 PM" (add current year)
+          const currentYear = new Date().getFullYear();
+          concertDate = new Date(`${concert.date} ${currentYear}`);
+        }
+        
         if (!isNaN(concertDate.getTime())) {
           const daysDiff = Math.ceil((concertDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
           matchesDate = daysDiff >= dateRange[0] && daysDiff <= dateRange[1];
@@ -66,7 +80,30 @@ export function ConcertSearch({ concerts }: ConcertSearchProps) {
 
   const formatDate = (dateString: string) => {
     try {
-      const date = new Date(dateString);
+      // Handle various date formats from the database
+      let date: Date;
+      
+      // Try parsing as-is first
+      date = new Date(dateString);
+      
+      // If invalid, try parsing specific formats
+      if (isNaN(date.getTime())) {
+        // Handle formats like "Thursday, December 15, 2024 at 7:00 PM"
+        const cleanedDate = dateString.replace(/at\s+/, '');
+        date = new Date(cleanedDate);
+      }
+      
+      if (isNaN(date.getTime())) {
+        // Handle formats like "Fri, Jul 18, 7:30 PM" (add current year)
+        const currentYear = new Date().getFullYear();
+        date = new Date(`${dateString} ${currentYear}`);
+      }
+      
+      if (isNaN(date.getTime())) {
+        // If still invalid, return the original string
+        return dateString;
+      }
+      
       return date.toLocaleDateString('en-US', {
         weekday: 'short',
         month: 'short',
