@@ -286,36 +286,36 @@ export default function Home() {
 
       {/* Enhanced SEO Footer */}
       <footer
-        className="bg-slate-900 text-white py-16 mt-12"
+        className="bg-white text-slate-800 py-16 mt-12"
         role="contentinfo"
       >
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
               <h4 className="text-lg font-semibold mb-4">Classical Concerts</h4>
-              <ul className="space-y-2 text-sm text-slate-300">
+              <ul className="space-y-2 text-sm text-slate-600">
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <a href="#" className="hover:text-slate-800">
                     Piano Recitals
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <a href="#" className="hover:text-slate-800">
                     Chamber Music
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <a href="#" className="hover:text-slate-800">
                     Orchestra Concerts
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <a href="#" className="hover:text-slate-800">
                     Violin Performances
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <a href="#" className="hover:text-slate-800">
                     Cello Recitals
                   </a>
                 </li>
@@ -324,29 +324,29 @@ export default function Home() {
 
             <div>
               <h4 className="text-lg font-semibold mb-4">Concert Venues</h4>
-              <ul className="space-y-2 text-sm text-slate-300">
+              <ul className="space-y-2 text-sm text-slate-600">
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <a href="#" className="hover:text-slate-800">
                     Concert Halls
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <a href="#" className="hover:text-slate-800">
                     Music Conservatories
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <a href="#" className="hover:text-slate-800">
                     University Venues
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <a href="#" className="hover:text-slate-800">
                     Community Centers
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <a href="#" className="hover:text-slate-800">
                     Outdoor Venues
                   </a>
                 </li>
@@ -355,29 +355,29 @@ export default function Home() {
 
             <div>
               <h4 className="text-lg font-semibold mb-4">Music Genres</h4>
-              <ul className="space-y-2 text-sm text-slate-300">
+              <ul className="space-y-2 text-sm text-slate-600">
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <a href="#" className="hover:text-slate-800">
                     Baroque Music
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <a href="#" className="hover:text-slate-800">
                     Romantic Period
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <a href="#" className="hover:text-slate-800">
                     Contemporary Classical
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <a href="#" className="hover:text-slate-800">
                     Modern Compositions
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <a href="#" className="hover:text-slate-800">
                     Jazz Classical Fusion
                   </a>
                 </li>
@@ -386,29 +386,29 @@ export default function Home() {
 
             <div>
               <h4 className="text-lg font-semibold mb-4">Community</h4>
-              <ul className="space-y-2 text-sm text-slate-300">
+              <ul className="space-y-2 text-sm text-slate-600">
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <a href="#" className="hover:text-slate-800">
                     Concert Reviews
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <a href="#" className="hover:text-slate-800">
                     Artist Profiles
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <a href="#" className="hover:text-slate-800">
                     Concert Calendar
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <a href="#" className="hover:text-slate-800">
                     Music Education
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <a href="#" className="hover:text-slate-800">
                     Subscribe to Updates
                   </a>
                 </li>
@@ -416,8 +416,8 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="border-t border-slate-700 pt-10 space-y-8">
-            <div className="text-center text-base text-slate-300 leading-relaxed max-w-5xl mx-auto px-8 py-4 bg-slate-800 rounded-lg">
+          <div className="border-t border-slate-200 pt-10 space-y-8">
+            <div className="text-center text-base text-slate-600 leading-relaxed max-w-5xl mx-auto px-8 py-4 bg-slate-100 rounded-lg">
               <p>
                 Find classical music concerts, piano recitals, chamber music,
                 and orchestral performances. Join our community of music
@@ -427,16 +427,16 @@ export default function Home() {
 
             <div className="flex items-center justify-between flex-wrap gap-8">
               <div className="flex items-center space-x-5">
-                <span className="text-base text-slate-300">Powered by</span>
+                <span className="text-base text-slate-600">Powered by</span>
                 <img
                   src={sightTuneLogo}
                   alt="SightTune - Classical Music Discovery Platform"
                   className="h-12 w-auto opacity-90 hover:opacity-100 transition-opacity"
                 />
-                <span className="font-bold text-2xl text-white">SightTune</span>
+                <span className="font-bold text-2xl text-slate-800">SightTune</span>
               </div>
 
-              <div className="text-base text-slate-400">
+              <div className="text-base text-slate-600">
                 <p>
                   &copy; 2024 SightTune. Connecting classical music lovers
                   worldwide.
