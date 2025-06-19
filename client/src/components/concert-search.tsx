@@ -13,6 +13,7 @@ interface ConcertSearchProps {
 export function ConcertSearch({ concerts }: ConcertSearchProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [dateRange, setDateRange] = useState([0, 365]); // Days from today
+  const [submittedQuery, setSubmittedQuery] = useState("");
 
   // Calculate date boundaries
   const today = new Date();
@@ -24,7 +25,7 @@ export function ConcertSearch({ concerts }: ConcertSearchProps) {
 
     let filtered = concerts.filter((concert) => {
       // Keyword search - match title, venue, or location
-      const query = searchQuery.toLowerCase();
+      const query = submittedQuery.toLowerCase();
       const matchesKeyword = !query || 
         concert.title.toLowerCase().includes(query) ||
         concert.venue.toLowerCase().includes(query) ||
@@ -43,7 +44,17 @@ export function ConcertSearch({ concerts }: ConcertSearchProps) {
 
     // Return top 3 results
     return filtered.slice(0, 3);
-  }, [concerts, searchQuery, dateRange]);
+  }, [concerts, submittedQuery, dateRange]);
+
+  const handleSearchSubmit = () => {
+    setSubmittedQuery(searchQuery);
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSearchSubmit();
+    }
+  };
 
   const formatDate = (dateString: string) => {
     try {
@@ -66,14 +77,23 @@ export function ConcertSearch({ concerts }: ConcertSearchProps) {
         <label htmlFor="concert-search" className="text-sm font-medium text-slate-700">
           Search by title, venue, or location
         </label>
-        <Input
-          id="concert-search"
-          type="text"
-          placeholder="Enter keywords..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="bg-white border-slate-300 focus:border-slate-500"
-        />
+        <div className="flex gap-2">
+          <Input
+            id="concert-search"
+            type="text"
+            placeholder="Enter keywords..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyPress={handleKeyPress}
+            className="bg-white border-slate-300 focus:border-slate-500 flex-1"
+          />
+          <button
+            onClick={handleSearchSubmit}
+            className="px-4 py-2 bg-slate-600 text-white rounded-md hover:bg-slate-700 transition-colors font-medium"
+          >
+            Search
+          </button>
+        </div>
       </div>
 
       {/* Date Range Slider */}
@@ -97,9 +117,22 @@ export function ConcertSearch({ concerts }: ConcertSearchProps) {
 
       {/* Search Results */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-slate-800">
-          Top 3 Results ({filteredConcerts.length} found)
-        </h3>
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-slate-800">
+            Top 3 Results ({filteredConcerts.length} found)
+          </h3>
+          {submittedQuery && (
+            <div className="text-sm text-slate-600">
+              Searching for: <span className="font-medium">"{submittedQuery}"</span>
+              <button 
+                onClick={() => setSubmittedQuery("")}
+                className="ml-2 text-blue-600 hover:text-blue-800 underline"
+              >
+                Clear
+              </button>
+            </div>
+          )}
+        </div>
         
         {filteredConcerts.length === 0 ? (
           <div className="text-center py-8 text-slate-500">
