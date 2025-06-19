@@ -36,6 +36,7 @@ class ConcertData(BaseModel):
     image_url: str
     concert_link: str
     location: str
+    event_type: str
 
 def get_db_connection():
     """Create and return a database connection"""
@@ -49,7 +50,7 @@ def get_db_connection():
 
 def validate_csv_headers(headers):
     """Validate that CSV has required headers"""
-    required_headers = ['title', 'date', 'venue', 'price', 'organizer', 'description', 'image_url', 'concert_link', 'location']
+    required_headers = ['title', 'date', 'venue', 'price', 'organizer', 'description', 'image_url', 'concert_link', 'location', 'event_type']
     missing_headers = [h for h in required_headers if h not in headers]
     
     if missing_headers:
@@ -80,7 +81,8 @@ def read_csv_file(file_path):
                         description=row['description'].strip(),
                         image_url=row['image_url'].strip(),
                         concert_link=row['concert_link'].strip(),
-                        location=row['location'].strip()
+                        location=row['location'].strip(),
+                        event_type=row['event_type'].strip()
                     )
                     concerts.append(concert_data)
                     
@@ -116,8 +118,8 @@ def insert_concert(conn, concert_data):
         
         # Insert new concert
         cur.execute("""
-            INSERT INTO concerts (title, date, venue, price, organizer, description, image_url, concert_link, location)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO concerts (title, date, venue, price, organizer, description, image_url, concert_link, location, event_type)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             RETURNING id
         """, (
             concert_data.title,
@@ -128,7 +130,8 @@ def insert_concert(conn, concert_data):
             concert_data.description,
             concert_data.image_url,
             concert_data.concert_link,
-            concert_data.location
+            concert_data.location,
+            concert_data.event_type
         ))
         
         concert_id = cur.fetchone()[0]
@@ -189,7 +192,8 @@ def create_sample_csv(file_path="sample_concerts.csv"):
             'description': 'An evening of classical piano music featuring works by Chopin, Debussy, and Rachmaninoff.',
             'image_url': 'https://example.com/sample-concert-image.jpg',
             'concert_link': 'https://www.eventbrite.com/d/dc--washington/classical-concert/',
-            'location': 'DC'
+            'location': 'DC',
+            'event_type': 'classical'
         },
         {
             'title': 'Jazz Piano Night',
@@ -200,12 +204,13 @@ def create_sample_csv(file_path="sample_concerts.csv"):
             'description': 'Contemporary jazz piano performances featuring local and touring artists.',
             'image_url': 'https://example.com/jazz-piano-image.jpg',
             'concert_link': 'https://www.eventbrite.com/d/dc--washington/classical-concert/',
-            'location': 'DC'
+            'location': 'DC',
+            'event_type': 'jazz'
         }
     ]
     
     with open(file_path, 'w', newline='', encoding='utf-8') as file:
-        writer = csv.DictWriter(file, fieldnames=['title', 'date', 'venue', 'price', 'organizer', 'description', 'image_url', 'concert_link', 'location'])
+        writer = csv.DictWriter(file, fieldnames=['title', 'date', 'venue', 'price', 'organizer', 'description', 'image_url', 'concert_link', 'location', 'event_type'])
         writer.writeheader()
         writer.writerows(sample_data)
     
