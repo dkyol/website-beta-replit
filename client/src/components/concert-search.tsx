@@ -12,7 +12,7 @@ interface ConcertSearchProps {
 
 export function ConcertSearch({ concerts }: ConcertSearchProps) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [dateRange, setDateRange] = useState([-365, 365]); // Days from today (include past events too)
+  const [dateRange, setDateRange] = useState([0, 365]); // Days from today into the future
   const [submittedQuery, setSubmittedQuery] = useState("");
 
   // Calculate date boundaries
@@ -113,12 +113,11 @@ export function ConcertSearch({ concerts }: ConcertSearchProps) {
           value={dateRange}
           onValueChange={setDateRange}
           max={365}
-          min={-365}
+          min={0}
           step={1}
           className="w-full"
         />
         <div className="flex justify-between text-xs text-slate-500">
-          <span>1 Year Ago</span>
           <span>Today</span>
           <span>1 Year Future</span>
         </div>
