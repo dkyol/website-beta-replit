@@ -13,6 +13,7 @@ export const concerts = pgTable("concerts", {
   imageUrl: text("image_url").notNull(),
   concertLink: text("concert_link").notNull().default("https://www.eventbrite.com/d/dc--washington/classical-concert/"),
   location: text("location").notNull().default("DC"),
+  eventType: text("event_type").notNull().default("classical"),
 });
 
 export const votes = pgTable("votes", {
