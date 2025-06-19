@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { FeaturedConcert } from "@/components/featured-concert";
 import { Rankings } from "@/components/rankings";
 import { UserBadges } from "@/components/user-badges";
+import { ConcertSearch } from "@/components/concert-search";
 import { useTimer } from "@/hooks/use-timer";
 import { useSession } from "@/hooks/use-session";
 import { filterFutureConcerts } from "@/lib/dateUtils";
@@ -182,6 +183,17 @@ export default function Home() {
             onVoteSubmitted={onVoteSubmitted}
             sessionId={sessionId}
           />
+        </section>
+
+        {/* Concert Search Section */}
+        <section
+          aria-labelledby="concert-search"
+          className="mb-8 bg-gradient-to-br from-slate-100 to-slate-200 rounded-lg shadow-sm border border-slate-300 p-8"
+        >
+          <h2 id="concert-search" className="text-2xl font-bold text-slate-800 mb-6 text-center">
+            Find Your Perfect Concert
+          </h2>
+          <ConcertSearch concerts={allConcerts || []} />
         </section>
 
         {/* User Achievement Section */}
