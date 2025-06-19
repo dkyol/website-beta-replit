@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
+    
+    <!-- Homepage -->
+    <url>
+        <loc>https://enjoyclassicalmusic.replit.app/</loc>
+        <lastmod>2025-06-19</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+    </url>
+    
+    <!-- Concert Search Page -->
+    <url>
+        <loc>https://enjoyclassicalmusic.replit.app/search</loc>
+        <lastmod>2025-06-19</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <!-- Rankings Page -->
+    <url>
+        <loc>https://enjoyclassicalmusic.replit.app/rankings</loc>
+        <lastmod>2025-06-19</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <!-- Classical Music Concerts Category -->
+    <url>
+        <loc>https://enjoyclassicalmusic.replit.app/concerts/classical</loc>
+        <lastmod>2025-06-19</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <!-- Piano Recitals Category -->
+    <url>
+        <loc>https://enjoyclassicalmusic.replit.app/concerts/piano</loc>
+        <lastmod>2025-06-19</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <!-- Chamber Music Category -->
+    <url>
+        <loc>https://enjoyclassicalmusic.replit.app/concerts/chamber</loc>
+        <lastmod>2025-06-19</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <!-- Symphony Concerts Category -->
+    <url>
+        <loc>https://enjoyclassicalmusic.replit.app/concerts/symphony</loc>
+        <lastmod>2025-06-19</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <!-- Washington DC Concerts -->
+    <url>
+        <loc>https://enjoyclassicalmusic.replit.app/concerts/washington-dc</loc>
+        <lastmod>2025-06-19</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+    </url>
+    
+    <!-- Kennedy Center Concerts -->
+    <url>
+        <loc>https://enjoyclassicalmusic.replit.app/venues/kennedy-center</loc>
+        <lastmod>2025-06-19</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <!-- Today's Concerts -->
+    <url>
+        <loc>https://enjoyclassicalmusic.replit.app/concerts/today</loc>
+        <lastmod>2025-06-19</lastmod>
+        <changefreq>hourly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    
+    <!-- This Week's Concerts -->
+    <url>
+        <loc>https://enjoyclassicalmusic.replit.app/concerts/this-week</loc>
+        <lastmod>2025-06-19</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <!-- About Page -->
+    <url>
+        <loc>https://enjoyclassicalmusic.replit.app/about</loc>
+        <lastmod>2025-06-19</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    
+    <!-- Contact Page -->
+    <url>
+        <loc>https://enjoyclassicalmusic.replit.app/contact</loc>
+        <lastmod>2025-06-19</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.4</priority>
+    </url>
+    
+    <!-- Privacy Policy -->
+    <url>
+        <loc>https://enjoyclassicalmusic.replit.app/privacy</loc>
+        <lastmod>2025-06-19</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.3</priority>
+    </url>
+    
+    <!-- Terms of Service -->
+    <url>
+        <loc>https://enjoyclassicalmusic.replit.app/terms</loc>
+        <lastmod>2025-06-19</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.3</priority>
+    </url>
+
+</urlset>
