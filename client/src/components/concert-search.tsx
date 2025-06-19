@@ -156,7 +156,7 @@ export function ConcertSearch({ concerts }: ConcertSearchProps) {
         />
         <div className="flex justify-between text-xs text-slate-500">
           <span>Today</span>
-          <span>1 Year Future</span>
+          <span>365 Days</span>
         </div>
       </div>
 
