@@ -111,6 +111,12 @@ export function FeaturedConcert({ concert, timeLeft, voteStats, onVoteSubmitted,
     >
       <div className="text-center mb-6">
         <h2 className="text-2xl font-bold text-slate-800 mb-2">Featured Concert</h2>
+        <div className="flex items-center justify-center gap-2 text-sm text-slate-600">
+          <span>Next concert in:</span>
+          <span className="font-mono font-semibold text-blue-600">
+            {timeLeft}s
+          </span>
+        </div>
       </div>
 
       <Card className="overflow-hidden shadow-lg">
