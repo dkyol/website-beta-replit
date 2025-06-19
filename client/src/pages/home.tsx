@@ -433,7 +433,14 @@ export default function Home() {
                   alt="SightTune - Classical Music Discovery Platform"
                   className="h-12 w-auto opacity-90 hover:opacity-100 transition-opacity"
                 />
-                <span className="font-bold text-2xl text-slate-800">SightTune</span>
+                <a 
+                  href="https://www.sighttune.com/" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="font-bold text-2xl text-slate-800 hover:text-blue-600 transition-colors"
+                >
+                  SightTune
+                </a>
               </div>
 
               <div className="text-base text-slate-600">
