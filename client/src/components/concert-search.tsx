@@ -12,7 +12,7 @@ interface ConcertSearchProps {
 
 export function ConcertSearch({ concerts }: ConcertSearchProps) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [dateRange, setDateRange] = useState([0, 365]); // Days from today
+  const [dateRange, setDateRange] = useState([-365, 365]); // Days from today (include past events too)
   const [submittedQuery, setSubmittedQuery] = useState("");
 
   // Calculate date boundaries
@@ -31,10 +31,18 @@ export function ConcertSearch({ concerts }: ConcertSearchProps) {
         concert.venue.toLowerCase().includes(query) ||
         (concert.location && concert.location.toLowerCase().includes(query));
 
-      // Date filter
-      const concertDate = new Date(concert.date);
-      const daysDiff = Math.ceil((concertDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-      const matchesDate = daysDiff >= dateRange[0] && daysDiff <= dateRange[1];
+      // Date filter - parse various date formats
+      let matchesDate = true; // Default to true if date parsing fails
+      try {
+        const concertDate = new Date(concert.date);
+        if (!isNaN(concertDate.getTime())) {
+          const daysDiff = Math.ceil((concertDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+          matchesDate = daysDiff >= dateRange[0] && daysDiff <= dateRange[1];
+        }
+      } catch (error) {
+        // If date parsing fails, include the concert
+        matchesDate = true;
+      }
 
       return matchesKeyword && matchesDate;
     });
@@ -105,13 +113,14 @@ export function ConcertSearch({ concerts }: ConcertSearchProps) {
           value={dateRange}
           onValueChange={setDateRange}
           max={365}
-          min={0}
+          min={-365}
           step={1}
           className="w-full"
         />
         <div className="flex justify-between text-xs text-slate-500">
+          <span>1 Year Ago</span>
           <span>Today</span>
-          <span>1 Year</span>
+          <span>1 Year Future</span>
         </div>
       </div>
 
@@ -134,10 +143,18 @@ export function ConcertSearch({ concerts }: ConcertSearchProps) {
           )}
         </div>
         
-        {filteredConcerts.length === 0 ? (
+        {submittedQuery && filteredConcerts.length === 0 ? (
           <div className="text-center py-8 text-slate-500">
             <p>No concerts match your search criteria.</p>
             <p className="text-sm mt-1">Try adjusting your keywords or date range.</p>
+            <div className="mt-4 text-xs text-slate-400">
+              Debug: Searching for "{submittedQuery}" in {concerts.length} concerts
+            </div>
+          </div>
+        ) : !submittedQuery ? (
+          <div className="text-center py-8 text-slate-500">
+            <p>Enter a search term and press Enter or click Search to find concerts.</p>
+            <p className="text-sm mt-1">Search by title, venue, or location (like "DC").</p>
           </div>
         ) : (
           <div className="grid gap-4">
