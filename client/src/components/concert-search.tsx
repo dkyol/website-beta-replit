@@ -127,7 +127,7 @@ export function ConcertSearch({ concerts }: ConcertSearchProps) {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold text-slate-800">
-            Top 3 Results ({filteredConcerts.length} found)
+            Results
           </h3>
           {submittedQuery && (
             <div className="text-sm text-slate-600">
