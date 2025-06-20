@@ -13,6 +13,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.sendFile(imagePath);
   });
 
+  // Get future concerts only (must be before /:id route)
+  app.get("/api/concerts/future", async (req, res) => {
+    try {
+      const concerts = await storage.getFutureConcerts();
+      res.json(concerts);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch future concerts" });
+    }
+  });
+
   // Get all concerts
   app.get("/api/concerts", async (req, res) => {
     try {
