@@ -71,97 +71,125 @@ class RealConcertScraper:
     def parse_kennedy_center(self, soup, base_url, venue_name):
         """Parse Kennedy Center events page for real concert data"""
         concerts = []
+        seen_titles = set()
         
-        # Look for event elements on Kennedy Center website
-        event_elements = soup.find_all(['div', 'article'], string=re.compile(r'concert|classical|piano|symphony|chamber', re.I))
+        # Look for unique event links with specific hrefs
+        event_links = soup.find_all('a', href=re.compile(r'/calendar/|/events/|/performances/', re.I))
         
-        for element in event_elements[:5]:
-            parent = element.parent
-            if not parent:
+        for link in event_links:
+            title = link.get_text(strip=True)
+            href = link.get('href', '')
+            
+            # Skip duplicates or non-meaningful titles
+            if title in seen_titles or len(title) < 15 or not href:
                 continue
                 
-            # Extract concert details from the element's parent container
-            title = self.extract_text_safely(parent, ['h1', 'h2', 'h3', 'h4', '[class*="title"]'])
-            date = self.extract_date_safely(parent)
-            price = self.extract_price_safely(parent)
-            description = self.extract_description_safely(parent)
-            link = self.extract_link_safely(parent, base_url)
-            image = self.extract_image_safely(parent, base_url)
-            
-            # Only add if we have meaningful content
-            if title and len(title) > 10 and any(keyword in title.lower() for keyword in ['concert', 'classical', 'piano', 'symphony']):
+            # Check if it's classical music related
+            link_text = (title + ' ' + link.parent.get_text()).lower() if link.parent else title.lower()
+            if any(keyword in link_text for keyword in ['classical', 'symphony', 'piano', 'chamber', 'opera', 'orchestra']):
+                seen_titles.add(title)
+                
+                container = link.parent
                 concert = {
                     'title': title,
-                    'date': date,
+                    'date': self.extract_date_safely(container),
                     'venue': venue_name,
-                    'price': price,
+                    'price': self.extract_price_safely(container),
                     'organizer': 'Kennedy Center',
-                    'description': description,
-                    'image_url': image,
-                    'concert_link': link,
+                    'description': self.extract_description_safely(container),
+                    'image_url': self.extract_image_safely(container, base_url),
+                    'concert_link': urljoin(base_url, href),
                     'location': 'DC',
                     'event_type': 'classical'
                 }
                 concerts.append(concert)
+                
+                if len(concerts) >= 3:
+                    break
         
         return concerts
 
     def parse_strathmore(self, soup, base_url, venue_name):
         """Parse Strathmore events page for real concert data"""
         concerts = []
+        seen_titles = set()
         
-        # Look for Strathmore event listings
-        event_links = soup.find_all('a', href=re.compile(r'event|show|concert', re.I))
+        # Look for unique event links with specific patterns
+        event_links = soup.find_all('a', href=re.compile(r'/event/|/show/|/concert/|/performance/', re.I))
         
-        for link in event_links[:3]:
+        for link in event_links:
             title = link.get_text(strip=True)
+            href = link.get('href', '')
             
-            if len(title) > 10 and any(keyword in title.lower() for keyword in ['concert', 'classical', 'music', 'piano']):
-                parent = link.parent
+            # Skip duplicates or non-meaningful titles
+            if title in seen_titles or len(title) < 10 or not href:
+                continue
                 
+            # Check if it's music-related
+            link_context = (title + ' ' + link.parent.get_text()).lower() if link.parent else title.lower()
+            if any(keyword in link_context for keyword in ['concert', 'classical', 'music', 'piano', 'symphony', 'chamber']):
+                seen_titles.add(title)
+                
+                container = link.parent
                 concert = {
                     'title': title,
-                    'date': self.extract_date_safely(parent),
+                    'date': self.extract_date_safely(container),
                     'venue': venue_name,
-                    'price': self.extract_price_safely(parent),
+                    'price': self.extract_price_safely(container),
                     'organizer': 'Strathmore',
-                    'description': self.extract_description_safely(parent),
-                    'image_url': self.extract_image_safely(parent, base_url),
-                    'concert_link': urljoin(base_url, link.get('href', '')),
+                    'description': self.extract_description_safely(container),
+                    'image_url': self.extract_image_safely(container, base_url),
+                    'concert_link': urljoin(base_url, href),
                     'location': 'DC',
                     'event_type': 'classical'
                 }
                 concerts.append(concert)
+                
+                if len(concerts) >= 3:
+                    break
         
         return concerts
 
     def parse_wolf_trap(self, soup, base_url, venue_name):
         """Parse Wolf Trap events page for real concert data"""
         concerts = []
+        seen_titles = set()
         
-        # Look for Wolf Trap event listings
-        event_containers = soup.find_all(['div', 'article'], class_=re.compile(r'event|show|listing', re.I))
+        # Look for individual event links with unique hrefs
+        event_links = soup.find_all('a', href=True)
         
-        for container in event_containers[:3]:
-            text_content = container.get_text()
+        for link in event_links:
+            href = link.get('href', '')
+            title = link.get_text(strip=True)
             
-            if any(keyword in text_content.lower() for keyword in ['classical', 'symphony', 'orchestra', 'piano']):
-                title = self.extract_text_safely(container, ['h1', 'h2', 'h3', 'a'])
+            # Skip if not an event link or duplicate
+            if not href or '/performance/' not in href or title in seen_titles or len(title) < 10:
+                continue
                 
-                if title and len(title) > 8:
-                    concert = {
-                        'title': title,
-                        'date': self.extract_date_safely(container),
-                        'venue': venue_name,
-                        'price': self.extract_price_safely(container),
-                        'organizer': 'Wolf Trap Foundation',
-                        'description': self.extract_description_safely(container),
-                        'image_url': self.extract_image_safely(container, base_url),
-                        'concert_link': self.extract_link_safely(container, base_url),
-                        'location': 'DC',
-                        'event_type': 'classical'
-                    }
-                    concerts.append(concert)
+            # Check if it's a music-related event
+            parent_text = link.parent.get_text().lower() if link.parent else title.lower()
+            if any(keyword in parent_text for keyword in ['classical', 'symphony', 'orchestra', 'piano', 'music', 'concert']):
+                seen_titles.add(title)
+                
+                # Extract details from the link's parent container
+                container = link.parent
+                
+                concert = {
+                    'title': title,
+                    'date': self.extract_date_safely(container),
+                    'venue': venue_name,
+                    'price': self.extract_price_safely(container),
+                    'organizer': 'Wolf Trap Foundation',
+                    'description': self.extract_description_safely(container),
+                    'image_url': self.extract_image_safely(container, base_url),
+                    'concert_link': urljoin(base_url, href),
+                    'location': 'DC',
+                    'event_type': 'classical'
+                }
+                concerts.append(concert)
+                
+                if len(concerts) >= 5:  # Limit to 5 unique concerts
+                    break
         
         return concerts
 
