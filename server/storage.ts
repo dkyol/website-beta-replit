@@ -119,149 +119,184 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getConcertById(id: number): Promise<Concert | undefined> {
-    const [concert] = await db.select().from(concerts).where(eq(concerts.id, id));
-    return concert || undefined;
+    try {
+      const [concert] = await db.select().from(concerts).where(eq(concerts.id, id));
+      return concert || undefined;
+    } catch (error) {
+      console.error("Database error in getConcertById:", error);
+      return undefined;
+    }
   }
 
   async createConcert(concert: InsertConcert): Promise<Concert> {
-    const [newConcert] = await db
-      .insert(concerts)
-      .values(concert)
-      .returning();
-    return newConcert;
+    try {
+      const [newConcert] = await db
+        .insert(concerts)
+        .values(concert)
+        .returning();
+      return newConcert;
+    } catch (error) {
+      console.error("Database error in createConcert:", error);
+      throw new Error("Failed to create concert");
+    }
   }
 
   async vote(vote: InsertVote, sessionId: string): Promise<Vote> {
-    // Create the vote with session tracking
-    const [newVote] = await db
-      .insert(votes)
-      .values({ ...vote, sessionId })
-      .returning();
-    
-    // Update user session statistics after vote
-    await this.createOrUpdateUserSession(sessionId);
-    
-    return newVote;
+    try {
+      // Create the vote with session tracking
+      const [newVote] = await db
+        .insert(votes)
+        .values({ ...vote, sessionId })
+        .returning();
+      
+      // Update user session statistics after vote
+      await this.createOrUpdateUserSession(sessionId);
+      
+      return newVote;
+    } catch (error) {
+      console.error("Database error in vote:", error);
+      throw new Error("Failed to submit vote");
+    }
   }
 
   async getVoteStats(): Promise<{ [concertId: number]: { excited: number; interested: number } }> {
-    const voteResults = await db
-      .select({
-        concertId: votes.concertId,
-        voteType: votes.voteType,
-        count: sql<number>`count(*)`.as('count')
-      })
-      .from(votes)
-      .groupBy(votes.concertId, votes.voteType);
+    try {
+      const voteResults = await db
+        .select({
+          concertId: votes.concertId,
+          voteType: votes.voteType,
+          count: sql<number>`count(*)`.as('count')
+        })
+        .from(votes)
+        .groupBy(votes.concertId, votes.voteType);
 
-    const stats: { [concertId: number]: { excited: number; interested: number } } = {};
-    
-    for (const result of voteResults) {
-      if (!stats[result.concertId]) {
-        stats[result.concertId] = { excited: 0, interested: 0 };
-      }
+      const stats: { [concertId: number]: { excited: number; interested: number } } = {};
       
-      if (result.voteType === 'excited') {
-        stats[result.concertId].excited = result.count;
-      } else if (result.voteType === 'interested') {
-        stats[result.concertId].interested = result.count;
+      for (const result of voteResults) {
+        if (!stats[result.concertId]) {
+          stats[result.concertId] = { excited: 0, interested: 0 };
+        }
+        
+        if (result.voteType === 'excited') {
+          stats[result.concertId].excited = result.count;
+        } else if (result.voteType === 'interested') {
+          stats[result.concertId].interested = result.count;
+        }
       }
-    }
 
-    return stats;
+      return stats;
+    } catch (error) {
+      console.error("Database error in getVoteStats:", error);
+      return {};
+    }
   }
 
   async getConcertsWithVotes(): Promise<ConcertWithVotes[]> {
-    const allConcerts = await this.getConcerts();
-    const voteStats = await this.getVoteStats();
+    try {
+      const allConcerts = await this.getConcerts();
+      const voteStats = await this.getVoteStats();
     
-    const concertsWithVotes = allConcerts.map(concert => {
-      const stats = voteStats[concert.id] || { excited: 0, interested: 0 };
-      const totalVotes = stats.excited + stats.interested;
-      const weightedScore = (stats.excited * 2) + stats.interested;
-      
-      return {
-        ...concert,
-        excitedVotes: stats.excited,
-        interestedVotes: stats.interested,
-        totalVotes,
-        weightedScore,
-        rank: 0, // Will be set after sorting
-        previousRank: this.previousRanks.get(concert.id)
-      };
-    });
+      const concertsWithVotes = allConcerts.map(concert => {
+        const stats = voteStats[concert.id] || { excited: 0, interested: 0 };
+        const totalVotes = stats.excited + stats.interested;
+        const weightedScore = (stats.excited * 2) + stats.interested;
+        
+        return {
+          ...concert,
+          excitedVotes: stats.excited,
+          interestedVotes: stats.interested,
+          totalVotes,
+          weightedScore,
+          rank: 0, // Will be set after sorting
+          previousRank: this.previousRanks.get(concert.id)
+        };
+      });
 
-    // Sort by weighted score and assign ranks
-    concertsWithVotes.sort((a, b) => b.weightedScore - a.weightedScore);
-    
-    concertsWithVotes.forEach((concert, index) => {
-      const currentRank = index + 1;
-      const previousRank = concert.previousRank || currentRank;
+      // Sort by weighted score and assign ranks
+      concertsWithVotes.sort((a, b) => b.weightedScore - a.weightedScore);
       
-      concert.rank = currentRank;
-      (concert as any).rankChange = previousRank - currentRank;
-      
-      // Update previous ranks for next time
-      this.previousRanks.set(concert.id, currentRank);
-    });
+      concertsWithVotes.forEach((concert, index) => {
+        const currentRank = index + 1;
+        const previousRank = concert.previousRank || currentRank;
+        
+        concert.rank = currentRank;
+        (concert as any).rankChange = previousRank - currentRank;
+        
+        // Update previous ranks for next time
+        this.previousRanks.set(concert.id, currentRank);
+      });
 
-    // Return only top 10 concerts
-    return concertsWithVotes.slice(0, 10);
+      // Return only top 10 concerts
+      return concertsWithVotes.slice(0, 10);
+    } catch (error) {
+      console.error("Database error in getConcertsWithVotes:", error);
+      return [];
+    }
   }
 
   async getUserSession(sessionId: string): Promise<UserSession | undefined> {
-    const [session] = await db.select().from(userSessions).where(eq(userSessions.sessionId, sessionId));
-    return session || undefined;
+    try {
+      const [session] = await db.select().from(userSessions).where(eq(userSessions.sessionId, sessionId));
+      return session || undefined;
+    } catch (error) {
+      console.error("Database error in getUserSession:", error);
+      return undefined;
+    }
   }
 
 
 
   async createOrUpdateUserSession(sessionId: string): Promise<UserSession> {
-    // Get current session stats by querying votes
-    const sessionVotes = await db
-      .select({
-        totalVotes: count(),
-        excitedVotes: sql<number>`sum(case when ${votes.voteType} = 'excited' then 1 else 0 end)`,
-        interestedVotes: sql<number>`sum(case when ${votes.voteType} = 'interested' then 1 else 0 end)`,
-        uniqueConcerts: countDistinct(votes.concertId)
-      })
-      .from(votes)
-      .where(eq(votes.sessionId, sessionId));
-
-    const stats = sessionVotes[0] || { totalVotes: 0, excitedVotes: 0, interestedVotes: 0, uniqueConcerts: 0 };
-
-    // Check if session exists
-    const existingSession = await this.getUserSession(sessionId);
-    
-    if (existingSession) {
-      // Update existing session
-      const [updatedSession] = await db
-        .update(userSessions)
-        .set({
-          totalVotes: stats.totalVotes,
-          excitedVotes: stats.excitedVotes,
-          interestedVotes: stats.interestedVotes,
-          uniqueConcertsVoted: stats.uniqueConcerts,
-          lastVoteAt: new Date()
+    try {
+      // Get current session stats by querying votes
+      const sessionVotes = await db
+        .select({
+          totalVotes: count(),
+          excitedVotes: sql<number>`sum(case when ${votes.voteType} = 'excited' then 1 else 0 end)`,
+          interestedVotes: sql<number>`sum(case when ${votes.voteType} = 'interested' then 1 else 0 end)`,
+          uniqueConcerts: countDistinct(votes.concertId)
         })
-        .where(eq(userSessions.sessionId, sessionId))
-        .returning();
-      return updatedSession;
-    } else {
-      // Create new session
-      const [newSession] = await db
-        .insert(userSessions)
-        .values({
-          sessionId,
-          totalVotes: stats.totalVotes,
-          excitedVotes: stats.excitedVotes,
-          interestedVotes: stats.interestedVotes,
-          uniqueConcertsVoted: stats.uniqueConcerts,
-          firstVoteAt: new Date(),
-          lastVoteAt: new Date()
-        })
-        .returning();
-      return newSession;
+        .from(votes)
+        .where(eq(votes.sessionId, sessionId));
+
+      const stats = sessionVotes[0] || { totalVotes: 0, excitedVotes: 0, interestedVotes: 0, uniqueConcerts: 0 };
+
+      // Check if session exists
+      const existingSession = await this.getUserSession(sessionId);
+      
+      if (existingSession) {
+        // Update existing session
+        const [updatedSession] = await db
+          .update(userSessions)
+          .set({
+            totalVotes: stats.totalVotes,
+            excitedVotes: stats.excitedVotes,
+            interestedVotes: stats.interestedVotes,
+            uniqueConcertsVoted: stats.uniqueConcerts,
+            lastVoteAt: new Date()
+          })
+          .where(eq(userSessions.sessionId, sessionId))
+          .returning();
+        return updatedSession;
+      } else {
+        // Create new session
+        const [newSession] = await db
+          .insert(userSessions)
+          .values({
+            sessionId,
+            totalVotes: stats.totalVotes,
+            excitedVotes: stats.excitedVotes,
+            interestedVotes: stats.interestedVotes,
+            uniqueConcertsVoted: stats.uniqueConcerts,
+            firstVoteAt: new Date(),
+            lastVoteAt: new Date()
+          })
+          .returning();
+        return newSession;
+      }
+    } catch (error) {
+      console.error("Database error in createOrUpdateUserSession:", error);
+      throw new Error("Failed to update user session");
     }
   }
 
