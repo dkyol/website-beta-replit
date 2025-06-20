@@ -21,40 +21,27 @@ def save_page5_content():
         os.makedirs(assets_dir)
         print(f"Created directory: {assets_dir}")
     
-    # Read the existing content file
-    source_file = "attached_assets/content-1750435935735.md"
-    
-    try:
-        with open(source_file, 'r', encoding='utf-8') as f:
-            content = f.read()
-        
-        print(f"Successfully read content from: {source_file}")
-        print(f"Content length: {len(content)} characters")
-        
-    except FileNotFoundError:
-        print(f"Source file {source_file} not found")
-        return None
-    except Exception as e:
-        print(f"Error reading source file: {e}")
-        return None
-    
-    # Create enhanced markdown with metadata for page 5
+    # Create markdown content with metadata for page 5 (no file reading)
     markdown_content = f"""# Eventbrite Classical Concert Listings - Page 5
 
 **Source URL**: https://www.eventbrite.com/d/online/classical-concert/?page=5  
 **Generated**: {time.strftime('%Y-%m-%d %H:%M:%S')}  
-**Original Content File**: {source_file}  
-**Processing Method**: Direct content preservation with metadata
+**Processing Method**: Direct markdown generation without file sourcing
 
 ---
 
 ## Page Content
 
-{content}
+This script creates a markdown file structure for Eventbrite page 5 content.
+Content should be provided directly without reading from existing files.
+
+To use this script with actual content:
+1. Modify the markdown_content variable to include the desired content
+2. Run the script to generate the formatted markdown file
 
 ---
 
-**Extraction Notes**: This content represents authentic data from Eventbrite's classical concert listings page 5, saved for processing and analysis.
+**Note**: This version does not read from or source any existing files as requested.
 """
     
     # Save to new markdown file
