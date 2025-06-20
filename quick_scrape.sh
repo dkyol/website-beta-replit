@@ -7,16 +7,21 @@ set -e
 
 BASE_URL="https://www.eventbrite.com/d/online/classical-concert/?page="
 START_PAGE=2
-END_PAGE=5
+END_PAGE=100
 OUTPUT_FILE="combined_concerts.csv"
 
 echo "Quick Eventbrite Scraper - Pages $START_PAGE to $END_PAGE"
 echo "========================================================="
 
-# Initialize output file with header
-echo "title,date,venue,price,organizer,description,image_url,concert_link,location,event_type" > "$OUTPUT_FILE"
+# Initialize output file with header if it doesn't exist
+if [ ! -f "$OUTPUT_FILE" ]; then
+    echo "title,date,venue,price,organizer,description,image_url,concert_link,location,event_type" > "$OUTPUT_FILE"
+    echo "Created new output file: $OUTPUT_FILE"
+else
+    echo "Appending to existing file: $OUTPUT_FILE"
+fi
 
-TOTAL_CONCERTS=0
+NEW_CONCERTS=0
 SUCCESSFUL_PAGES=0
 
 for page in $(seq $START_PAGE $END_PAGE); do
@@ -31,7 +36,7 @@ for page in $(seq $START_PAGE $END_PAGE); do
             tail -n +2 "scraped_concerts.csv" >> "$OUTPUT_FILE"
             
             echo "✓ Page $page: $count concerts added"
-            TOTAL_CONCERTS=$((TOTAL_CONCERTS + count))
+            NEW_CONCERTS=$((NEW_CONCERTS + count))
             SUCCESSFUL_PAGES=$((SUCCESSFUL_PAGES + 1))
             
             # Clean up individual file
@@ -47,10 +52,14 @@ for page in $(seq $START_PAGE $END_PAGE); do
     sleep 1
 done
 
+# Get total concerts in file
+TOTAL_CONCERTS=$(($(wc -l < "$OUTPUT_FILE") - 1))
+
 echo ""
 echo "Results:"
 echo "- Successfully scraped: $SUCCESSFUL_PAGES/$((END_PAGE - START_PAGE + 1)) pages"
-echo "- Total concerts: $TOTAL_CONCERTS"
+echo "- New concerts added: $NEW_CONCERTS"
+echo "- Total concerts in file: $TOTAL_CONCERTS"
 echo "- Output file: $OUTPUT_FILE"
 
 if [ $TOTAL_CONCERTS -gt 0 ]; then

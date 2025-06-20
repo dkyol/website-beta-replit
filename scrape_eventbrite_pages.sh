@@ -7,8 +7,8 @@ set -e  # Exit on any error
 
 # Configuration
 BASE_URL="https://www.eventbrite.com/d/online/classical-concert/?page="
-START_PAGE=2
-END_PAGE=5
+START_PAGE=5
+END_PAGE=100
 OUTPUT_FILE="combined_concerts.csv"
 TEMP_DIR="temp_scrape_$$"
 
@@ -93,12 +93,18 @@ if [ ${#SUCCESSFUL_PAGES[@]} -eq 0 ]; then
     exit 1
 fi
 
-# Start with header from first successful page
-FIRST_PAGE=${SUCCESSFUL_PAGES[0]}
-head -1 "${TEMP_DIR}/page_${FIRST_PAGE}.csv" > "$OUTPUT_FILE"
+# Check if output file exists, if not create with header
+if [ ! -f "$OUTPUT_FILE" ]; then
+    FIRST_PAGE=${SUCCESSFUL_PAGES[0]}
+    head -1 "${TEMP_DIR}/page_${FIRST_PAGE}.csv" > "$OUTPUT_FILE"
+    echo "Created new output file: $OUTPUT_FILE"
+else
+    echo "Appending to existing file: $OUTPUT_FILE"
+fi
 
-# Combine all data (skip headers from subsequent files)
+# Combine all data (skip headers from all files)
 TOTAL_CONCERTS=0
+NEW_CONCERTS=0
 for page in "${SUCCESSFUL_PAGES[@]}"; do
     temp_file="${TEMP_DIR}/page_${page}.csv"
     if [ -f "$temp_file" ]; then
@@ -107,11 +113,14 @@ for page in "${SUCCESSFUL_PAGES[@]}"; do
         
         # Count concerts from this page
         local page_count=$(tail -n +2 "$temp_file" | wc -l)
-        TOTAL_CONCERTS=$((TOTAL_CONCERTS + page_count))
+        NEW_CONCERTS=$((NEW_CONCERTS + page_count))
         
         echo "Added $page_count concerts from page $page"
     fi
 done
+
+# Count total concerts in file
+TOTAL_CONCERTS=$(($(wc -l < "$OUTPUT_FILE") - 1))
 
 # Summary
 echo ""
@@ -123,7 +132,8 @@ if [ ${#FAILED_PAGES[@]} -gt 0 ]; then
     echo -e "${RED}Failed pages: ${FAILED_PAGES[*]}${NC}"
 fi
 
-echo "Total concerts collected: $TOTAL_CONCERTS"
+echo "New concerts added: $NEW_CONCERTS"
+echo "Total concerts in file: $TOTAL_CONCERTS"
 echo "Combined output file: $OUTPUT_FILE"
 
 # Show preview of results
