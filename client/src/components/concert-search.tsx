@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Calendar, MapPin, Users, Share2, Star } from "lucide-react";
+import { Calendar, MapPin, Users, Share2, Star, ChevronLeft, ChevronRight } from "lucide-react";
 import { SocialShare } from "@/components/social-share";
 import { formatConcertDate } from "@shared/dateUtils";
 import type { Concert } from "@shared/schema";
@@ -24,8 +24,11 @@ export function ConcertSearch({ concerts, sessionId }: ConcertSearchProps) {
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [selectedConcert, setSelectedConcert] = useState<Concert | null>(null);
   const [votedConcerts, setVotedConcerts] = useState<Set<number>>(new Set());
+  const [currentPage, setCurrentPage] = useState(1);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  const RESULTS_PER_PAGE = 3;
 
   // Vote mutation
   const voteMutation = useMutation({
@@ -121,13 +124,22 @@ export function ConcertSearch({ concerts, sessionId }: ConcertSearchProps) {
     // Sort by date (soonest first)
     filtered.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-    // Return top 3 results
-    return filtered.slice(0, 3);
+    return filtered;
   }, [concerts, submittedQuery, dateRange]);
 
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredConcerts.length / RESULTS_PER_PAGE);
+  const startIndex = (currentPage - 1) * RESULTS_PER_PAGE;
+  const endIndex = startIndex + RESULTS_PER_PAGE;
+  const currentPageConcerts = filteredConcerts.slice(startIndex, endIndex);
+
+  // Reset to page 1 when search changes
   const handleSearchSubmit = () => {
     setSubmittedQuery(searchQuery);
+    setCurrentPage(1);
   };
+
+
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
@@ -225,8 +237,20 @@ export function ConcertSearch({ concerts, sessionId }: ConcertSearchProps) {
             <p className="text-sm mt-1">Search by title, venue, or location (like "DC").</p>
           </div>
         ) : (
-          <div className="grid gap-4">
-            {filteredConcerts.map((concert, index) => (
+          <>
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-sm text-slate-600">
+                Showing {startIndex + 1}-{Math.min(endIndex, filteredConcerts.length)} of {filteredConcerts.length} concert{filteredConcerts.length !== 1 ? 's' : ''}
+              </p>
+              {totalPages > 1 && (
+                <p className="text-sm text-slate-500">
+                  Page {currentPage} of {totalPages}
+                </p>
+              )}
+            </div>
+            
+            <div className="grid gap-4">
+              {currentPageConcerts.map((concert, index) => (
               <Card key={concert.id} className="bg-white border-slate-200 hover:shadow-md transition-shadow">
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
@@ -234,7 +258,7 @@ export function ConcertSearch({ concerts, sessionId }: ConcertSearchProps) {
                       {concert.title}
                     </CardTitle>
                     <Badge variant="secondary" className="ml-2 text-xs">
-                      #{index + 1}
+                      #{startIndex + index + 1}
                     </Badge>
                   </div>
                 </CardHeader>
@@ -306,7 +330,49 @@ export function ConcertSearch({ concerts, sessionId }: ConcertSearchProps) {
                 </CardContent>
               </Card>
             ))}
-          </div>
+            </div>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center space-x-2 pt-6">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                  disabled={currentPage === 1}
+                  className="flex items-center gap-1"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  Previous
+                </Button>
+
+                <div className="flex space-x-1">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                    <Button
+                      key={pageNum}
+                      variant={currentPage === pageNum ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setCurrentPage(pageNum)}
+                      className="w-10 h-10"
+                    >
+                      {pageNum}
+                    </Button>
+                  ))}
+                </div>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                  disabled={currentPage === totalPages}
+                  className="flex items-center gap-1"
+                >
+                  Next
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              </div>
+            )}
+          </>
         )}
       </div>
 
