@@ -214,7 +214,7 @@ export function FeaturedConcert({ concert, timeLeft, voteStats, onVoteSubmitted,
                     hasVoted={hasVoted}
                     className="w-full py-4 px-6 bg-slate-600 hover:bg-slate-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    🎵 Somewhat Interested
+                    🎵 Interested
                   </PulseVoteButton>
                 </div>
                 

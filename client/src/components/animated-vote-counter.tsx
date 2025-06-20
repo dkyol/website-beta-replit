@@ -63,7 +63,7 @@ export function AnimatedVoteCounter({
       <div className="flex justify-between items-center">
         <div className="flex items-center space-x-2">
           <Star className="w-4 h-4 text-blue-500" />
-          <span className="text-slate-600">Somewhat Interested:</span>
+          <span className="text-slate-600">Interested:</span>
         </div>
         <AnimatePresence mode="wait">
           <motion.span
@@ -180,7 +180,7 @@ export function VoteProgressBar({ excited, interested, maxVotes = 50 }: VoteProg
         </div>
         <div className="flex items-center space-x-1">
           <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-          <span>Somewhat Interested</span>
+          <span>Interested</span>
         </div>
       </div>
     </div>
