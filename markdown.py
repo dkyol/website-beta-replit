@@ -278,12 +278,9 @@ def main():
     result = generator.generate_markdown_from_url(url, "demo.md")
     
     if not result:
-        print("URL extraction failed. Trying existing content for demonstration...")
-        result = generator.generate_markdown_from_existing_content("demo.md")
-        
-        if not result:
-            print("Generating fallback markdown...")
-            result = generator.generate_fallback_markdown(url, "demo.md")
+        print("Failed to extract content from the URL. Unable to generate markdown.")
+        print("This is likely due to anti-bot protection or network restrictions.")
+        sys.exit(1)
     
     if result:
         print(f"\nMarkdown generation completed!")
