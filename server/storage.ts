@@ -1,10 +1,12 @@
 import { concerts, votes, userSessions, type Concert, type InsertConcert, type Vote, type InsertVote, type ConcertWithVotes, type UserSession, type InsertUserSession, type UserBadges } from "@shared/schema";
 import { db } from "./db";
-import { eq, sql, count, countDistinct } from "drizzle-orm";
+import { eq, sql, count, countDistinct, desc } from "drizzle-orm";
 import { calculateUserBadges } from "@shared/badges";
+import { sortConcertsByDate, isFutureConcert } from "@shared/dateUtils";
 
 export interface IStorage {
   getConcerts(): Promise<Concert[]>;
+  getFutureConcerts(): Promise<Concert[]>;
   getConcertById(id: number): Promise<Concert | undefined>;
   createConcert(concert: InsertConcert): Promise<Concert>;
   vote(vote: InsertVote, sessionId: string): Promise<Vote>;
@@ -39,7 +41,7 @@ export class DatabaseStorage implements IStorage {
     const concertData = [
       {
         title: "José Luiz Martins' Brazil Project",
-        date: "Sunday at 7:00 PM",
+        date: new Date("2024-12-15T19:00:00"),
         venue: "Takoma Station Tavern",
         price: "From $23.18",
         organizer: "Jazz Kitchen Productions",
@@ -48,7 +50,7 @@ export class DatabaseStorage implements IStorage {
       },
       {
         title: "Harpsichordist Jory Vinikour plays Sparkling Scarlatti Sonatas",
-        date: "Sat, Jun 28, 8:00 PM",
+        date: new Date("2025-06-28T20:00:00"),
         venue: "St. Columba's Episcopal Church",
         price: "From $63.74",
         organizer: "Capriccio Baroque",
@@ -57,7 +59,7 @@ export class DatabaseStorage implements IStorage {
       },
       {
         title: "Washington | 2025 Scholarship Pianists Debut Recital",
-        date: "Fri, Jul 18, 7:30 PM",
+        date: new Date("2025-07-18T19:30:00"),
         venue: "La Maison Française, Embassy of France",
         price: "Free",
         organizer: "Embassy Cultural Program",
@@ -66,7 +68,7 @@ export class DatabaseStorage implements IStorage {
       },
       {
         title: "Fatty Liver Foundation Benefit Recital | Celimene Daudet, Piano",
-        date: "Thu, Oct 23, 7:30 PM",
+        date: new Date("2025-10-23T19:30:00"),
         venue: "La Maison Française, Embassy of France",
         price: "Donation",
         organizer: "Fatty Liver Foundation",
@@ -75,7 +77,7 @@ export class DatabaseStorage implements IStorage {
       },
       {
         title: "DC Chamber Musicians Season Finale",
-        date: "Saturday at 3:00 PM",
+        date: new Date("2025-08-16T15:00:00"),
         venue: "St Thomas Episcopal Church",
         price: "From $35.00",
         organizer: "DC Chamber Musicians",
@@ -84,7 +86,7 @@ export class DatabaseStorage implements IStorage {
       },
       {
         title: "Considering Matthew Shepard",
-        date: "Fri, Jul 11, 7:30 PM",
+        date: new Date("2025-07-11T19:30:00"),
         venue: "Washington National Cathedral",
         price: "From $23.18",
         organizer: "Berkshire Choral",
@@ -105,16 +107,26 @@ export class DatabaseStorage implements IStorage {
 
   async getConcerts(): Promise<Concert[]> {
     try {
-      const result = await db.select().from(concerts);
+      const result = await db.select().from(concerts).orderBy(concerts.date);
       // If no concerts found, try to initialize
       if (result.length === 0) {
         await this.initializeConcerts();
-        return await db.select().from(concerts);
+        return await db.select().from(concerts).orderBy(concerts.date);
       }
       return result;
     } catch (error) {
       console.error("Database error in getConcerts:", error);
       throw new Error("Failed to fetch concerts");
+    }
+  }
+
+  async getFutureConcerts(): Promise<Concert[]> {
+    try {
+      const allConcerts = await this.getConcerts();
+      return allConcerts.filter(concert => isFutureConcert(concert.date));
+    } catch (error) {
+      console.error("Database error in getFutureConcerts:", error);
+      return [];
     }
   }
 

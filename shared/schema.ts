@@ -5,7 +5,7 @@ import { z } from "zod";
 export const concerts = pgTable("concerts", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
-  date: text("date").notNull(),
+  date: timestamp("date").notNull(),
   venue: text("venue").notNull(),
   price: text("price").notNull(),
   organizer: text("organizer").notNull(),
