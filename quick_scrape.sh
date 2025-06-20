@@ -29,7 +29,7 @@ for page in $(seq $START_PAGE $END_PAGE); do
     echo "Scraping page $page: $url"
     
     # Run scraper and capture output
-    if python eventbrite_scraper.py "$url" >/dev/null 2>&1; then
+    if python scraper.py "$url" >/dev/null 2>&1; then
         if [ -f "scraped_concerts.csv" ]; then
             # Count concerts and add to combined file (skip header)
             count=$(tail -n +2 "scraped_concerts.csv" | wc -l)
