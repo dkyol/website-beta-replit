@@ -268,9 +268,7 @@ Currency
         if not content:
             print("Failed to extract content from URL. Trying with existing content file...")
             # Fallback: use existing content file for demonstration
-            if 'page=3' in url:
-                return self.process_existing_content()
-            return
+            return self.process_existing_content()
         
         # Step 2: Generate markdown file
         md_filename = self.generate_markdown_file(content, url)
@@ -300,42 +298,47 @@ Currency
 
     def process_existing_content(self):
         """Process existing content file as demonstration"""
-        existing_file = "attached_assets/content-1750286233795.md"
-        try:
-            print(f"Processing existing content file: {existing_file}")
-            concerts = self.parse_markdown_content(existing_file)
-            
-            if not concerts:
-                print("No classical concerts found in existing content")
-                return
-            
-            # Save to CSV
-            csv_filename = "extracted_concerts.csv"
-            self.save_to_csv(concerts, csv_filename)
-            
-            # Display results
-            print(f"\nExtracted {len(concerts)} classical concerts from existing content:")
-            for i, concert in enumerate(concerts, 1):
-                print(f"{i}. {concert['title']}")
-                if concert['date']:
-                    print(f"   Date: {concert['date']}")
-                if concert['venue']:
-                    print(f"   Venue: {concert['venue']}")
-                print()
-            
-            return existing_file, csv_filename
-            
-        except FileNotFoundError:
-            print("Existing content file not found. Using content-1749781800512.md")
-            existing_file = "attached_assets/content-1749781800512.md"
-            concerts = self.parse_markdown_content(existing_file)
-            
-            if concerts:
+        # Try the latest content file first
+        existing_files = [
+            "attached_assets/content-1750435595501.md",  # Latest from page 4
+            "attached_assets/content-1750286233795.md",
+            "attached_assets/content-1749781800512.md"
+        ]
+        
+        for existing_file in existing_files:
+            try:
+                print(f"Processing existing content file: {existing_file}")
+                concerts = self.parse_markdown_content(existing_file)
+                
+                if not concerts:
+                    print("No classical concerts found in this file, trying next...")
+                    continue
+                
+                # Save to CSV
                 csv_filename = "extracted_concerts.csv"
                 self.save_to_csv(concerts, csv_filename)
+                
+                # Display results
+                print(f"\nExtracted {len(concerts)} classical concerts from {existing_file}:")
+                for i, concert in enumerate(concerts, 1):
+                    print(f"{i}. {concert['title']}")
+                    if concert['date']:
+                        print(f"   Date: {concert['date']}")
+                    if concert['venue']:
+                        print(f"   Venue: {concert['venue']}")
+                    print()
+                
                 return existing_file, csv_filename
-            
-            return None
+                
+            except FileNotFoundError:
+                print(f"File {existing_file} not found, trying next...")
+                continue
+            except Exception as e:
+                print(f"Error processing {existing_file}: {e}")
+                continue
+        
+        print("No valid content files found")
+        return None
 
 def main():
     if len(sys.argv) != 2:

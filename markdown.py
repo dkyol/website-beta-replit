@@ -216,6 +216,7 @@ python markdown.py --file page_source.html
         
         # Try to use existing content files
         existing_files = [
+            "attached_assets/content-1750435595501.md",  # Latest content from page 4
             "attached_assets/content-1750286233795.md",
             "attached_assets/content-1749781800512.md"
         ]
