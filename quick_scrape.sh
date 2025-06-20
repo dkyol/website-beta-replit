@@ -7,7 +7,7 @@ set -e
 
 BASE_URL="https://www.eventbrite.com/d/online/classical-concert/?page="
 START_PAGE=2
-END_PAGE=100
+END_PAGE=5
 OUTPUT_FILE="combined_concerts.csv"
 
 echo "Quick Eventbrite Scraper - Pages $START_PAGE to $END_PAGE"

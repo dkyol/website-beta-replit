@@ -7,8 +7,8 @@ set -e  # Exit on any error
 
 # Configuration
 BASE_URL="https://www.eventbrite.com/d/online/classical-concert/?page="
-START_PAGE=5
-END_PAGE=100
+START_PAGE=2
+END_PAGE=5
 OUTPUT_FILE="combined_concerts.csv"
 TEMP_DIR="temp_scrape_$$"
 
