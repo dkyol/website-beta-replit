@@ -571,12 +571,14 @@ class EventbriteScraper:
             print("Data saved to CSV file instead")
 
 def main():
-    if len(sys.argv) != 2:
-        print("Usage: python eventbrite_scraper.py <eventbrite_url>")
+    if len(sys.argv) < 2 or len(sys.argv) > 3:
+        print("Usage: python eventbrite_scraper.py <eventbrite_url> [--upload-db]")
         print("Example: python eventbrite_scraper.py 'https://www.eventbrite.com/d/online/classical-concert/?page=2'")
+        print("Example: python eventbrite_scraper.py 'https://www.eventbrite.com/d/online/classical-concert/?page=2' --upload-db")
         sys.exit(1)
     
     url = sys.argv[1]
+    upload_to_db = len(sys.argv) == 3 and sys.argv[2] == '--upload-db'
     
     # Validate URL
     if 'eventbrite.com' not in url:
@@ -584,6 +586,8 @@ def main():
         sys.exit(1)
     
     print(f"Scraping concerts from: {url}")
+    if upload_to_db:
+        print("Will upload results directly to database")
     
     scraper = EventbriteScraper()
     concerts = scraper.scrape_concerts(url)
@@ -593,9 +597,14 @@ def main():
         for i, concert in enumerate(concerts, 1):
             print(f"{i}. {concert['title']} - {concert['date']}")
         
+        # Save to CSV file
         scraper.save_to_csv(concerts)
         
-        # Also display first few concerts for verification
+        # Upload to database if requested
+        if upload_to_db:
+            scraper.upload_to_database(concerts)
+        
+        # Display first concert details for verification
         print("\nFirst concert details:")
         if concerts:
             for key, value in concerts[0].items():
