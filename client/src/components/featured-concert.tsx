@@ -149,7 +149,7 @@ export function FeaturedConcert({ concert, timeLeft, voteStats, onVoteSubmitted,
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center gap-2">
                     <span className="font-semibold text-slate-700">Date:</span>
-                    <span className="text-slate-600">{concert.date}</span>
+                    <span className="text-slate-600">{formatConcertDate(concert.date)}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="font-semibold text-slate-700">Venue:</span>
