@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { Calendar, MapPin, Users, Share2, Star } from "lucide-react";
 import { SocialShare } from "@/components/social-share";
+import { formatConcertDate } from "@shared/dateUtils";
 import type { Concert } from "@shared/schema";
 
 interface ConcertSearchProps {
@@ -144,42 +145,7 @@ export function ConcertSearch({ concerts, sessionId }: ConcertSearchProps) {
     setSelectedConcert(null);
   };
 
-  const formatDate = (dateString: string) => {
-    try {
-      // Handle various date formats from the database
-      let date: Date;
-      
-      // Try parsing as-is first
-      date = new Date(dateString);
-      
-      // If invalid, try parsing specific formats
-      if (isNaN(date.getTime())) {
-        // Handle formats like "Thursday, December 15, 2024 at 7:00 PM"
-        const cleanedDate = dateString.replace(/at\s+/, '');
-        date = new Date(cleanedDate);
-      }
-      
-      if (isNaN(date.getTime())) {
-        // Handle formats like "Fri, Jul 18, 7:30 PM" (add current year)
-        const currentYear = new Date().getFullYear();
-        date = new Date(`${dateString} ${currentYear}`);
-      }
-      
-      if (isNaN(date.getTime())) {
-        // If still invalid, return the original string
-        return dateString;
-      }
-      
-      return date.toLocaleDateString('en-US', {
-        weekday: 'short',
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric'
-      });
-    } catch {
-      return dateString;
-    }
-  };
+
 
   return (
     <div className="space-y-6">
@@ -276,7 +242,7 @@ export function ConcertSearch({ concerts, sessionId }: ConcertSearchProps) {
                   <div className="space-y-3">
                     <div className="flex items-center text-sm text-slate-600">
                       <Calendar className="w-4 h-4 mr-2 text-slate-400" />
-                      {formatDate(concert.date)}
+                      {formatConcertDate(concert.date)}
                     </div>
                     
                     <div className="flex items-center text-sm text-slate-600">

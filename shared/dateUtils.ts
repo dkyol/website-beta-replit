@@ -11,6 +11,16 @@ export function formatConcertDate(date: Date | string): string {
 }
 
 /**
+ * Format a timestamp for compact display
+ * @param date - Date object or ISO string  
+ * @returns Formatted date string like "Fri, Jul 18, 2025"
+ */
+export function formatConcertDateShort(date: Date | string): string {
+  const dateObj = typeof date === 'string' ? new Date(date) : date;
+  return format(dateObj, "EEE, MMM d, yyyy");
+}
+
+/**
  * Format a timestamp for sorting and comparison
  * @param date - Date object or ISO string
  * @returns ISO string

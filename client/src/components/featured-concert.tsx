@@ -9,6 +9,7 @@ import { PianoFallback } from "./piano-fallback";
 import { VoteAnimation, FloatingVoteIndicator, PulseVoteButton } from "./vote-animation";
 import { AnimatedVoteCounter, VoteProgressBar } from "./animated-vote-counter";
 import { SocialShare } from "./social-share";
+import { formatConcertDate } from "@shared/dateUtils";
 import { Share2 } from "lucide-react";
 import type { Concert, ConcertWithVotes } from "@shared/schema";
 

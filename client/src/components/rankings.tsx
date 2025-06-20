@@ -2,6 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { formatConcertDateShort } from "@shared/dateUtils";
 import type { ConcertWithVotes } from "@shared/schema";
 
 export function Rankings() {
@@ -104,7 +106,7 @@ export function Rankings() {
                     {concert.title}
                   </h4>
                   <p className="text-sm text-slate-500 mt-1">
-                    {concert.venue} • {concert.date}
+                    {concert.venue} • {formatConcertDateShort(concert.date)}
                   </p>
                 </div>
                 
