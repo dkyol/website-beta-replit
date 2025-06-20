@@ -193,7 +193,7 @@ export default function Home() {
           <h2 id="concert-search" className="text-2xl font-bold text-slate-800 mb-6 text-center">
             Find Your Perfect Concert
           </h2>
-          <ConcertSearch concerts={allConcerts || []} />
+          <ConcertSearch concerts={allConcerts || []} sessionId={sessionId} />
         </section>
 
         {/* User Achievement Section */}

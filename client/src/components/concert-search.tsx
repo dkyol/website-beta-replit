@@ -1,23 +1,75 @@
 import { useState, useMemo } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin, Users, Share2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
+import { Calendar, MapPin, Users, Share2, Star } from "lucide-react";
 import { SocialShare } from "@/components/social-share";
 import type { Concert } from "@shared/schema";
 
 interface ConcertSearchProps {
   concerts: Concert[];
+  sessionId?: string;
 }
 
-export function ConcertSearch({ concerts }: ConcertSearchProps) {
+export function ConcertSearch({ concerts, sessionId }: ConcertSearchProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [dateRange, setDateRange] = useState([0, 365]); // Days from today into the future
   const [submittedQuery, setSubmittedQuery] = useState("");
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [selectedConcert, setSelectedConcert] = useState<Concert | null>(null);
+  const [votedConcerts, setVotedConcerts] = useState<Set<number>>(new Set());
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // Vote mutation
+  const voteMutation = useMutation({
+    mutationFn: async ({ concertId, voteType }: { concertId: number; voteType: "excited" | "interested" }) => {
+      return apiRequest("POST", "/api/vote", { concertId, voteType });
+    },
+    onSuccess: (_, { concertId }) => {
+      setVotedConcerts(prev => new Set(prev).add(concertId));
+      queryClient.invalidateQueries({ queryKey: ["/api/vote-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/rankings"] });
+      toast({
+        title: "Vote submitted!",
+        description: "Your excitement has been recorded.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Vote failed",
+        description: "Please try again.",
+        variant: "destructive"
+      });
+    }
+  });
+
+  const handleVote = (concertId: number, voteType: "excited" | "interested") => {
+    if (!sessionId) {
+      toast({
+        title: "Session required",
+        description: "Please refresh the page to enable voting.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (votedConcerts.has(concertId)) {
+      toast({
+        title: "Already voted",
+        description: "You can only vote once per concert.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    voteMutation.mutate({ concertId, voteType });
+  };
 
   // Calculate date boundaries
   const today = new Date();
@@ -247,6 +299,16 @@ export function ConcertSearch({ concerts }: ConcertSearchProps) {
                         {concert.price}
                       </span>
                       <div className="flex items-center gap-2">
+                        <Button
+                          onClick={() => handleVote(concert.id, 'excited')}
+                          disabled={votedConcerts.has(concert.id) || voteMutation.isPending}
+                          variant="default"
+                          size="sm"
+                          className="text-xs px-2 py-1 h-7 bg-red-600 hover:bg-red-700 disabled:opacity-50"
+                        >
+                          <Star className="w-3 h-3 mr-1" />
+                          {votedConcerts.has(concert.id) ? 'Voted!' : 'Very Excited'}
+                        </Button>
                         <Button
                           onClick={() => handleShareClick(concert)}
                           variant="outline"
