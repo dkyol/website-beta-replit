@@ -93,7 +93,8 @@ class EventbriteScraper:
                 response.raise_for_status()
             else:
                 print(f"Unable to access URL. Status: {response.status_code if response else 'No response'}")
-                return []
+                print("Attempting to find real concert data from alternative sources...")
+                return self.scrape_accessible_sources(url)
             
             soup = BeautifulSoup(response.content, 'html.parser')
             concerts = []
@@ -111,11 +112,11 @@ class EventbriteScraper:
                 concerts = self.extract_from_json_ld(soup, url)
                 if not concerts:
                     print("No structured data found either.")
-                    # Save HTML for debugging
-                    with open('debug_page.html', 'w', encoding='utf-8') as f:
-                        f.write(str(soup))
-                    print("Saved page HTML to debug_page.html for analysis")
-                    return []
+                    # Try alternative sources for real data
+                    concerts = self.scrape_accessible_sources(url)
+                    if not concerts:
+                        print("Unable to find real concert data from any source.")
+                        return []
             else:
                 for card in event_cards:
                     concert_data = self.extract_concert_data(card, url)
@@ -126,10 +127,12 @@ class EventbriteScraper:
             
         except requests.RequestException as e:
             print(f"Error fetching URL: {e}")
-            return []
+            print("Attempting to find real concert data from alternative sources...")
+            return self.scrape_accessible_sources(url)
         except Exception as e:
             print(f"Error parsing content: {e}")
-            return []
+            print("Attempting to find real concert data from alternative sources...")
+            return self.scrape_accessible_sources(url)
 
     def extract_from_json_ld(self, soup, base_url):
         """Extract event data from JSON-LD structured data"""
@@ -174,50 +177,65 @@ class EventbriteScraper:
         except Exception:
             return None
 
-    def create_sample_data(self, url):
-        """Create sample concert data for testing when scraping fails"""
-        print("Creating sample data for demonstration...")
+    def scrape_accessible_sources(self, url):
+        """Scrape accessible classical music event sources when primary source fails"""
+        print("Attempting to find real classical music events from accessible sources...")
         
-        sample_concerts = [
-            {
-                'title': 'Classical Piano Recital: Chopin & Liszt',
-                'date': 'Sat, Jan 25, 7:30 PM',
-                'venue': 'Kennedy Center Concert Hall',
-                'price': 'From $35.00',
-                'organizer': 'Washington Classical Society',
-                'description': 'An evening of romantic piano masterpieces featuring works by Chopin and Liszt performed by internationally acclaimed pianist.',
-                'image_url': 'https://example.com/piano-recital.jpg',
-                'concert_link': url,
-                'location': 'DC',
-                'event_type': 'classical'
-            },
-            {
-                'title': 'Chamber Music Series: String Quartet',
-                'date': 'Sun, Jan 26, 3:00 PM',
-                'venue': 'Strathmore Music Center',
-                'price': 'From $25.00',
-                'organizer': 'Bethesda Chamber Music',
-                'description': 'Intimate chamber music performance featuring Mozart and Brahms string quartets in our historic venue.',
-                'image_url': 'https://example.com/chamber-music.jpg',
-                'concert_link': url,
-                'location': 'DC',
-                'event_type': 'classical'
-            },
-            {
-                'title': 'Jazz Piano Trio Live',
-                'date': 'Fri, Jan 31, 8:00 PM',
-                'venue': 'Blues Alley',
-                'price': 'From $45.00',
-                'organizer': 'DC Jazz Collective',
-                'description': 'Contemporary jazz trio featuring original compositions and classic standards in an intimate club setting.',
-                'image_url': 'https://example.com/jazz-trio.jpg',
-                'concert_link': url,
-                'location': 'DC',
-                'event_type': 'jazz'
-            }
+        # Try alternative classical music websites that are more scraper-friendly
+        sources = [
+            "https://www.kennedy-center.org/whats-on/",
+            "https://www.strathmore.org/events/",
+            "https://www.wolftrap.org/calendar/"
         ]
         
-        return sample_concerts
+        concerts = []
+        for source_url in sources:
+            try:
+                print(f"Checking {source_url}...")
+                response = self.session.get(source_url, timeout=15)
+                if response.status_code == 200:
+                    source_concerts = self.parse_generic_events_page(response.content, source_url)
+                    concerts.extend(source_concerts)
+                    if len(concerts) >= 3:  # Stop after finding sufficient events
+                        break
+                        
+            except Exception as e:
+                print(f"Could not access {source_url}: {e}")
+                continue
+        
+        if not concerts:
+            print("No accessible sources found. Unable to extract real concert data.")
+            return []
+            
+        return concerts[:6]  # Return up to 6 events
+    
+    def parse_generic_events_page(self, content, base_url):
+        """Parse any events page for classical music content"""
+        soup = BeautifulSoup(content, 'html.parser')
+        concerts = []
+        
+        # Look for event-related elements
+        event_selectors = [
+            '[class*="event"]', '[class*="concert"]', '[class*="performance"]',
+            'article', '.card', '[role="article"]'
+        ]
+        
+        for selector in event_selectors:
+            elements = soup.select(selector)
+            for element in elements:
+                text = element.get_text().lower()
+                # Filter for classical music events
+                if any(keyword in text for keyword in ['classical', 'piano', 'symphony', 'chamber', 'recital', 'opera', 'concert']):
+                    concert_data = self.extract_concert_data(element, base_url)
+                    if concert_data and concert_data['title'] != "Concert Event":
+                        concerts.append(concert_data)
+                        if len(concerts) >= 3:
+                            break
+            
+            if len(concerts) >= 3:
+                break
+        
+        return concerts
 
     def format_json_date(self, date_str):
         """Format JSON-LD date to readable format"""
