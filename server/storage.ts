@@ -301,10 +301,37 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUserBadges(sessionId: string): Promise<UserBadges> {
-    const session = await this.getUserSession(sessionId);
+    try {
+      const session = await this.getUserSession(sessionId);
     
-    if (!session) {
-      // Return empty badges for non-existent sessions
+      if (!session) {
+        // Return empty badges for non-existent sessions
+        return {
+          sessionId,
+          badges: [],
+          session: {
+            id: 0,
+            sessionId,
+            totalVotes: 0,
+            excitedVotes: 0,
+            interestedVotes: 0,
+            uniqueConcertsVoted: 0,
+            firstVoteAt: null,
+            lastVoteAt: null,
+            createdAt: null
+          }
+        };
+      }
+
+      const badges = calculateUserBadges(session);
+      
+      return {
+        sessionId,
+        badges,
+        session
+      };
+    } catch (error) {
+      console.error("Database error in getUserBadges:", error);
       return {
         sessionId,
         badges: [],
@@ -321,14 +348,6 @@ export class DatabaseStorage implements IStorage {
         }
       };
     }
-
-    const badges = calculateUserBadges(session);
-    
-    return {
-      sessionId,
-      badges,
-      session
-    };
   }
 }
 
