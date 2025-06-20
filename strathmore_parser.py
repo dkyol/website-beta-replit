@@ -402,6 +402,33 @@ class StrathmoreParser:
             print(f"Error saving to CSV: {e}")
             return False
 
+def create_sample_csv():
+    """Create a sample CSV showing the expected format when data is accessible"""
+    sample_events = [
+        {
+            'title': 'Sample Concert Title (when accessible)',
+            'date': 'Fri, Jul 18, 7:30 PM',
+            'venue': 'Strathmore Music Center',
+            'price': 'Price TBA',
+            'organizer': 'Strathmore',
+            'description': 'Classical music performance at Strathmore Music Center',
+            'image_url': '',
+            'concert_link': 'https://www.strathmore.org/events-tickets/in-the-music-center/',
+            'location': 'North Bethesda, MD'
+        }
+    ]
+    
+    fieldnames = ['title', 'date', 'venue', 'price', 'organizer', 'description', 'image_url', 'concert_link', 'location']
+    
+    filename = "strathmore_format_sample.csv"
+    with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(sample_events)
+    
+    print(f"Created sample format file: {filename}")
+    print("This shows the structure that would be populated with authentic data when the site is accessible.")
+
 def main():
     """Main function"""
     print("Strathmore Events Parser")
@@ -413,11 +440,8 @@ def main():
     if events:
         parser.save_to_csv(events)
     else:
-        print("No events found. This may be due to:")
-        print("- Page structure changes")
-        print("- JavaScript-rendered content")
-        print("- Anti-bot protection")
-        print("- Network connectivity issues")
+        print("\nCreating sample CSV to show expected format...")
+        create_sample_csv()
 
 if __name__ == "__main__":
     main()
