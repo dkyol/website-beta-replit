@@ -93,8 +93,7 @@ class EventbriteScraper:
                 response.raise_for_status()
             else:
                 print(f"Unable to access URL. Status: {response.status_code if response else 'No response'}")
-                print("Attempting to find real concert data from alternative sources...")
-                return self.scrape_accessible_sources(url)
+                return []
             
             soup = BeautifulSoup(response.content, 'html.parser')
             concerts = []
@@ -112,11 +111,11 @@ class EventbriteScraper:
                 concerts = self.extract_from_json_ld(soup, url)
                 if not concerts:
                     print("No structured data found either.")
-                    # Try alternative sources for real data
-                    concerts = self.scrape_accessible_sources(url)
-                    if not concerts:
-                        print("Unable to find real concert data from any source.")
-                        return []
+                    # Save HTML for debugging
+                    with open('debug_page.html', 'w', encoding='utf-8') as f:
+                        f.write(str(soup))
+                    print("Saved page HTML to debug_page.html for analysis")
+                    return []
             else:
                 for card in event_cards:
                     concert_data = self.extract_concert_data(card, url)
@@ -127,12 +126,10 @@ class EventbriteScraper:
             
         except requests.RequestException as e:
             print(f"Error fetching URL: {e}")
-            print("Attempting to find real concert data from alternative sources...")
-            return self.scrape_accessible_sources(url)
+            return []
         except Exception as e:
             print(f"Error parsing content: {e}")
-            print("Attempting to find real concert data from alternative sources...")
-            return self.scrape_accessible_sources(url)
+            return []
 
     def extract_from_json_ld(self, soup, base_url):
         """Extract event data from JSON-LD structured data"""
@@ -231,28 +228,60 @@ class EventbriteScraper:
         """Extract events specifically from Kennedy Center website"""
         concerts = []
         
-        # Look for Kennedy Center event structures
-        event_elements = soup.find_all(['div', 'article'], class_=re.compile(r'event|performance|show', re.I))
+        # Multiple selector strategies for Kennedy Center events
+        event_selectors = [
+            '[class*="event-card"]',
+            '[class*="performance"]',
+            '[class*="show-card"]',
+            '[data-testid*="event"]',
+            '.event-listing',
+            '.card',
+            'article'
+        ]
         
-        for element in event_elements[:5]:  # Limit to first 5 events
-            text_content = element.get_text()
-            if any(keyword in text_content.lower() for keyword in ['classical', 'symphony', 'piano', 'chamber', 'opera']):
-                concert = {
-                    'title': self.extract_kennedy_title(element),
-                    'date': self.extract_kennedy_date(element),
-                    'venue': 'Kennedy Center',
-                    'price': self.extract_kennedy_price(element),
-                    'organizer': 'Kennedy Center',
-                    'description': self.extract_kennedy_description(element),
-                    'image_url': self.extract_kennedy_image(element, base_url),
-                    'concert_link': self.extract_kennedy_link(element, base_url),
-                    'location': 'DC',
-                    'event_type': 'classical'
-                }
-                if concert['title'] and len(concert['title']) > 5:
+        found_events = set()  # Track unique events to avoid duplicates
+        
+        for selector in event_selectors:
+            elements = soup.select(selector)
+            for element in elements:
+                text_content = element.get_text().strip()
+                
+                # Skip if too short or already processed
+                if len(text_content) < 50:
+                    continue
+                    
+                # Check for classical music content
+                if any(keyword in text_content.lower() for keyword in ['classical', 'symphony', 'piano', 'chamber', 'opera', 'concert', 'recital']):
+                    title = self.extract_kennedy_title(element)
+                    
+                    # Skip if we've already found this event or title is too generic
+                    if title in found_events or len(title) < 10:
+                        continue
+                        
+                    found_events.add(title)
+                    
+                    concert = {
+                        'title': title,
+                        'date': self.extract_kennedy_date(element),
+                        'venue': 'Kennedy Center',
+                        'price': self.extract_kennedy_price(element),
+                        'organizer': 'Kennedy Center',
+                        'description': self.extract_kennedy_description(element),
+                        'image_url': self.extract_kennedy_image(element, base_url),
+                        'concert_link': self.extract_kennedy_link(element, base_url),
+                        'location': 'DC',
+                        'event_type': 'classical'
+                    }
                     concerts.append(concert)
+                    
+                    if len(concerts) >= 3:  # Limit to 3 unique events
+                        break
+            
+            if len(concerts) >= 3:
+                break
         
-        return concerts
+        # If no specific events found, return empty list instead of generating fake data
+        return concerts if concerts else []
     
     def extract_kennedy_title(self, element):
         """Extract title from Kennedy Center event element"""
@@ -347,34 +376,190 @@ class EventbriteScraper:
     
     def parse_strathmore(self, soup, base_url):
         """Extract events from Strathmore website"""
-        # Similar structure for Strathmore events
-        return [{
-            'title': 'Chamber Music at Strathmore',
-            'date': self.generate_future_date(),
-            'venue': 'Strathmore Music Center',
-            'price': 'From $35.00',
-            'organizer': 'Strathmore',
-            'description': 'Intimate chamber music performance in our acoustically pristine venue.',
-            'image_url': 'https://example.com/strathmore-concert.jpg',
-            'concert_link': base_url,
-            'location': 'DC',
-            'event_type': 'classical'
-        }]
+        concerts = []
+        
+        # Look for Strathmore event elements
+        event_selectors = [
+            '[class*="event"]',
+            '[class*="performance"]',
+            '[class*="concert"]',
+            '.card',
+            'article',
+            '[data-event]'
+        ]
+        
+        found_events = set()
+        
+        for selector in event_selectors:
+            elements = soup.select(selector)
+            for element in elements:
+                text_content = element.get_text().strip()
+                
+                if len(text_content) < 40:
+                    continue
+                
+                # Check for classical music content
+                if any(keyword in text_content.lower() for keyword in ['classical', 'symphony', 'piano', 'chamber', 'opera', 'concert', 'recital', 'music']):
+                    title = self.extract_strathmore_title(element)
+                    
+                    if title in found_events or len(title) < 8:
+                        continue
+                        
+                    found_events.add(title)
+                    
+                    concert = {
+                        'title': title,
+                        'date': self.extract_strathmore_date(element),
+                        'venue': 'Strathmore Music Center',
+                        'price': self.extract_strathmore_price(element),
+                        'organizer': self.extract_strathmore_organizer(element),
+                        'description': self.extract_strathmore_description(element),
+                        'image_url': self.extract_strathmore_image(element, base_url),
+                        'concert_link': self.extract_strathmore_link(element, base_url),
+                        'location': 'DC',
+                        'event_type': 'classical'
+                    }
+                    concerts.append(concert)
+                    
+                    if len(concerts) >= 3:
+                        break
+            
+            if len(concerts) >= 3:
+                break
+        
+        return concerts
     
     def parse_wolf_trap(self, soup, base_url):
         """Extract events from Wolf Trap website"""
-        return [{
-            'title': 'Wolf Trap Symphony Series',
-            'date': self.generate_future_date(),
-            'venue': 'Wolf Trap National Park',
-            'price': 'From $28.00',
-            'organizer': 'Wolf Trap Foundation',
-            'description': 'Outdoor classical music experience under the stars.',
-            'image_url': 'https://example.com/wolf-trap-concert.jpg',
-            'concert_link': base_url,
-            'location': 'DC',
-            'event_type': 'classical'
-        }]
+        concerts = []
+        
+        # Look for Wolf Trap event elements
+        event_selectors = [
+            '[class*="event"]',
+            '[class*="performance"]',
+            '[class*="show"]',
+            '.card',
+            'article',
+            '[data-event]',
+            '.listing'
+        ]
+        
+        found_events = set()
+        
+        for selector in event_selectors:
+            elements = soup.select(selector)
+            for element in elements:
+                text_content = element.get_text().strip()
+                
+                if len(text_content) < 40:
+                    continue
+                
+                # Check for classical music content
+                if any(keyword in text_content.lower() for keyword in ['classical', 'symphony', 'piano', 'chamber', 'opera', 'concert', 'recital', 'music', 'orchestra']):
+                    title = self.extract_wolf_trap_title(element)
+                    
+                    if title in found_events or len(title) < 8:
+                        continue
+                        
+                    found_events.add(title)
+                    
+                    concert = {
+                        'title': title,
+                        'date': self.extract_wolf_trap_date(element),
+                        'venue': 'Wolf Trap National Park',
+                        'price': self.extract_wolf_trap_price(element),
+                        'organizer': self.extract_wolf_trap_organizer(element),
+                        'description': self.extract_wolf_trap_description(element),
+                        'image_url': self.extract_wolf_trap_image(element, base_url),
+                        'concert_link': self.extract_wolf_trap_link(element, base_url),
+                        'location': 'DC',
+                        'event_type': 'classical'
+                    }
+                    concerts.append(concert)
+                    
+                    if len(concerts) >= 3:
+                        break
+            
+            if len(concerts) >= 3:
+                break
+        
+        return concerts
+    
+    # Strathmore extraction methods
+    def extract_strathmore_title(self, element):
+        """Extract title from Strathmore event element"""
+        return self.extract_kennedy_title(element).replace("Kennedy Center Classical Performance", "Strathmore Concert")
+    
+    def extract_strathmore_date(self, element):
+        """Extract date from Strathmore event element"""
+        date = self.extract_kennedy_date(element)
+        return date if date != "Date TBD" else ""
+    
+    def extract_strathmore_price(self, element):
+        """Extract price from Strathmore event element"""
+        price = self.extract_kennedy_price(element)
+        return price if price != "Tickets available" else ""
+    
+    def extract_strathmore_organizer(self, element):
+        """Extract organizer from Strathmore event element"""
+        organizer_selectors = ['[class*="organizer"]', '[class*="presenter"]', '[class*="artist"]']
+        for selector in organizer_selectors:
+            org_elem = element.select_one(selector)
+            if org_elem:
+                return org_elem.get_text(strip=True)
+        return ""
+    
+    def extract_strathmore_description(self, element):
+        """Extract description from Strathmore event element"""
+        desc = self.extract_kennedy_description(element)
+        return desc if "Experience exceptional classical music" not in desc else ""
+    
+    def extract_strathmore_image(self, element, base_url):
+        """Extract image from Strathmore event element"""
+        img_url = self.extract_kennedy_image(element, base_url)
+        return img_url if "example.com" not in img_url else ""
+    
+    def extract_strathmore_link(self, element, base_url):
+        """Extract link from Strathmore event element"""
+        return self.extract_kennedy_link(element, base_url)
+    
+    # Wolf Trap extraction methods
+    def extract_wolf_trap_title(self, element):
+        """Extract title from Wolf Trap event element"""
+        return self.extract_kennedy_title(element).replace("Kennedy Center Classical Performance", "Wolf Trap Concert")
+    
+    def extract_wolf_trap_date(self, element):
+        """Extract date from Wolf Trap event element"""
+        date = self.extract_kennedy_date(element)
+        return date if date != "Date TBD" else ""
+    
+    def extract_wolf_trap_price(self, element):
+        """Extract price from Wolf Trap event element"""
+        price = self.extract_kennedy_price(element)
+        return price if price != "Tickets available" else ""
+    
+    def extract_wolf_trap_organizer(self, element):
+        """Extract organizer from Wolf Trap event element"""
+        organizer_selectors = ['[class*="organizer"]', '[class*="presenter"]', '[class*="artist"]']
+        for selector in organizer_selectors:
+            org_elem = element.select_one(selector)
+            if org_elem:
+                return org_elem.get_text(strip=True)
+        return ""
+    
+    def extract_wolf_trap_description(self, element):
+        """Extract description from Wolf Trap event element"""
+        desc = self.extract_kennedy_description(element)
+        return desc if "Experience exceptional classical music" not in desc else ""
+    
+    def extract_wolf_trap_image(self, element, base_url):
+        """Extract image from Wolf Trap event element"""
+        img_url = self.extract_kennedy_image(element, base_url)
+        return img_url if "example.com" not in img_url else ""
+    
+    def extract_wolf_trap_link(self, element, base_url):
+        """Extract link from Wolf Trap event element"""
+        return self.extract_kennedy_link(element, base_url)
     
     def parse_generic_venue(self, soup, base_url):
         """Generic parsing for unknown venue websites"""
