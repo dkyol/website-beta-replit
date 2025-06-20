@@ -22,14 +22,19 @@ export class DatabaseStorage implements IStorage {
     this.previousRanks = new Map();
     
     // Initialize with real DC piano concert data if tables are empty
-    this.initializeConcerts();
+    this.initializeConcerts().catch(console.error);
   }
 
   private async initializeConcerts() {
-    // Check if concerts already exist in database
-    const existingConcerts = await db.select().from(concerts).limit(1);
-    if (existingConcerts.length > 0) {
-      return; // Data already exists, no need to initialize
+    try {
+      // Check if concerts already exist in database
+      const existingConcerts = await db.select().from(concerts).limit(1);
+      if (existingConcerts.length > 0) {
+        return; // Data already exists, no need to initialize
+      }
+    } catch (error) {
+      console.log("Database not ready yet, will initialize on first request");
+      return;
     }
     const concertData = [
       {
@@ -88,14 +93,29 @@ export class DatabaseStorage implements IStorage {
       }
     ];
 
-    // Insert initial concert data into database
-    for (const data of concertData) {
-      await db.insert(concerts).values(data);
+    try {
+      // Insert initial concert data into database
+      for (const data of concertData) {
+        await db.insert(concerts).values(data);
+      }
+    } catch (error) {
+      console.error("Failed to initialize concerts:", error);
     }
   }
 
   async getConcerts(): Promise<Concert[]> {
-    return await db.select().from(concerts);
+    try {
+      const result = await db.select().from(concerts);
+      // If no concerts found, try to initialize
+      if (result.length === 0) {
+        await this.initializeConcerts();
+        return await db.select().from(concerts);
+      }
+      return result;
+    } catch (error) {
+      console.error("Database error in getConcerts:", error);
+      throw new Error("Failed to fetch concerts");
+    }
   }
 
   async getConcertById(id: number): Promise<Concert | undefined> {
