@@ -4,6 +4,7 @@ import { FeaturedConcert } from "@/components/featured-concert";
 import { Rankings } from "@/components/rankings";
 import { UserBadges } from "@/components/user-badges";
 import { ConcertSearch } from "@/components/concert-search";
+import { ConcertGallery } from "@/components/concert-gallery";
 import { useTimer } from "@/hooks/use-timer";
 import { useSession } from "@/hooks/use-session";
 import { filterFutureConcerts } from "@/lib/dateUtils";
@@ -181,6 +182,17 @@ export default function Home() {
             Discover a New Artist
           </h2>
           <ConcertSearch concerts={allConcerts || []} />
+        </section>
+
+        {/* Concert Gallery Section */}
+        <section
+          aria-labelledby="concert-gallery"
+          className="mb-8 bg-white rounded-lg shadow-sm border border-slate-200 p-8"
+        >
+          <h2 id="concert-gallery" className="sr-only">
+            Upcoming Concert Gallery
+          </h2>
+          <ConcertGallery concerts={allConcerts || []} />
         </section>
 
 
