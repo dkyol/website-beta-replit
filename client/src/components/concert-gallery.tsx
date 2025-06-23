@@ -57,30 +57,30 @@ export function ConcertGallery({ concerts }: ConcertGalleryProps) {
         </p>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 auto-rows-max">
+      <div className="grid grid-cols-6 gap-3" style={{ gridAutoRows: '100px' }}>
         {randomConcerts.map((concert, index) => {
           const hasError = imageErrors.has(concert.id);
           
-          // Create varied sizes for visual interest
-          const sizeClasses = [
-            "md:col-span-2 md:row-span-2", // Large
-            "md:col-span-1 md:row-span-1", // Small
-            "md:col-span-2 md:row-span-1", // Wide
-            "md:col-span-1 md:row-span-2", // Tall
-            "md:col-span-1 md:row-span-1", // Small
-            "md:col-span-2 md:row-span-1", // Wide
-            "md:col-span-1 md:row-span-1", // Small
-            "md:col-span-1 md:row-span-2", // Tall
-            "md:col-span-2 md:row-span-1", // Wide
-            "md:col-span-1 md:row-span-1", // Small
+          // Create specific layout pattern matching the attached image
+          const layouts = [
+            "col-span-2 row-span-1", // Wide rectangle
+            "col-span-1 row-span-2", // Tall rectangle  
+            "col-span-1 row-span-2", // Tall rectangle
+            "col-span-2 row-span-1", // Wide rectangle
+            "col-span-2 row-span-1", // Wide rectangle
+            "col-span-1 row-span-2", // Tall rectangle
+            "col-span-1 row-span-1", // Small square
+            "col-span-2 row-span-1", // Wide rectangle
+            "col-span-2 row-span-1", // Wide rectangle
+            "col-span-1 row-span-1", // Small square
           ];
           
-          const sizeClass = sizeClasses[index % sizeClasses.length];
+          const layoutClass = layouts[index % layouts.length];
           
           return (
             <Card 
               key={concert.id} 
-              className={`${sizeClass} overflow-hidden hover:shadow-lg hover:scale-105 transition-all duration-300 cursor-pointer group`}
+              className={`${layoutClass} overflow-hidden hover:shadow-lg hover:scale-105 transition-all duration-300 cursor-pointer group`}
             >
               <a
                 href={concert.concertLink}
@@ -89,7 +89,7 @@ export function ConcertGallery({ concerts }: ConcertGalleryProps) {
                 className="block h-full"
               >
                 <CardContent className="p-0 h-full relative">
-                  <div className="relative h-full min-h-[120px]">
+                  <div className="relative h-full w-full">
                     {hasError ? (
                       <div className="w-full h-full bg-slate-100 flex items-center justify-center">
                         <PianoFallback className="w-full h-full opacity-50" />
