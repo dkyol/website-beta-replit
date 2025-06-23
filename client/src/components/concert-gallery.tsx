@@ -19,16 +19,41 @@ export function ConcertGallery({ concerts }: ConcertGalleryProps) {
     const now = new Date();
     const futureConcerts = concerts.filter(concert => {
       const isFuture = new Date(concert.date) > now;
-      const hasRealImage = concert.imageUrl && 
-        !concert.imageUrl.includes('placeholder') &&
-        !concert.imageUrl.includes('default') &&
-        !concert.imageUrl.includes('fallback') &&
-        concert.imageUrl !== '' &&
-        // Filter out common placeholder image patterns
-        !concert.imageUrl.includes('105961_RETINA_PORTRAIT_16_9') &&
-        !concert.imageUrl.includes('ef64d601-8740-43cd-86ea-ed9b392e4f7b');
       
-      return isFuture && hasRealImage;
+      // Check if concert has a real image URL
+      if (!concert.imageUrl || concert.imageUrl === '') {
+        return false;
+      }
+      
+      // List of placeholder image patterns to exclude
+      const placeholderPatterns = [
+        'placeholder',
+        'default',
+        'fallback',
+        '105961_RETINA_PORTRAIT_16_9',
+        'ef64d601-8740-43cd-86ea-ed9b392e4f7b',
+        'piano-icon',
+        'piano_fallback',
+        'generic',
+        'no-image',
+        'missing'
+      ];
+      
+      // Check if URL contains any placeholder patterns
+      const hasPlaceholderPattern = placeholderPatterns.some(pattern => 
+        concert.imageUrl.toLowerCase().includes(pattern.toLowerCase())
+      );
+      
+      // Additional check: if image URL is very short or looks like a default pattern
+      const isValidImageUrl = concert.imageUrl.length > 20 && 
+        (concert.imageUrl.includes('ticketm.net') || 
+         concert.imageUrl.includes('amazonaws') ||
+         concert.imageUrl.includes('cloudfront') ||
+         concert.imageUrl.includes('imgix') ||
+         concert.imageUrl.includes('unsplash') ||
+         concert.imageUrl.startsWith('http'));
+      
+      return isFuture && !hasPlaceholderPattern && isValidImageUrl;
     });
     
     // Shuffle and take 10
@@ -69,7 +94,7 @@ export function ConcertGallery({ concerts }: ConcertGalleryProps) {
       </div>
 
       <div className="grid grid-cols-6 gap-3" style={{ gridAutoRows: '100px' }}>
-        {randomConcerts.map((concert, index) => {
+        {randomConcerts.filter(concert => !imageErrors.has(concert.id)).map((concert, index) => {
           const hasError = imageErrors.has(concert.id);
           
           // Create specific layout pattern matching the attached image
@@ -102,9 +127,8 @@ export function ConcertGallery({ concerts }: ConcertGalleryProps) {
                 <CardContent className="p-0 h-full relative">
                   <div className="relative h-full w-full">
                     {hasError ? (
-                      <div className="w-full h-full bg-slate-100 flex items-center justify-center">
-                        <PianoFallback className="w-full h-full opacity-50" />
-                      </div>
+                      // Don't show fallback - skip this concert entirely by not rendering
+                      <div className="hidden"></div>
                     ) : (
                       <img
                         src={concert.imageUrl}
