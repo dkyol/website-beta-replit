@@ -95,9 +95,10 @@ export function ConcertGallery({ concerts }: ConcertGalleryProps) {
         </p>
       </div>
 
-      <div className="grid grid-cols-6 gap-3" style={{ gridAutoRows: '100px' }}>
-        {randomConcerts.filter(concert => !imageErrors.has(concert.id)).map((concert, index) => {
-          const hasError = imageErrors.has(concert.id);
+      <div className="relative">
+        <div className="grid grid-cols-6 gap-3" style={{ gridAutoRows: '100px' }}>
+          {randomConcerts.filter(concert => !imageErrors.has(concert.id)).slice(0, 9).map((concert, index) => {
+            const hasError = imageErrors.has(concert.id);
           
           // Create specific layout pattern matching the attached image
           const layouts = [
@@ -166,7 +167,42 @@ export function ConcertGallery({ concerts }: ConcertGalleryProps) {
               </a>
             </Card>
           );
-        })}
+          })}
+        </div>
+        
+        {/* Large thumbnail in lower right */}
+        {randomConcerts.filter(concert => !imageErrors.has(concert.id)).length > 9 && (
+          <div className="absolute bottom-0 right-0 w-48 h-32">
+            <a 
+              href={randomConcerts[9]?.concertLink} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="block w-full h-full group"
+            >
+              <Card className="w-full h-full overflow-hidden border-2 border-white shadow-lg hover:scale-105 transition-all duration-300 hover:shadow-xl">
+                <CardContent className="p-0 h-full relative">
+                  <div className="relative h-full w-full">
+                    <img
+                      src={randomConcerts[9]?.imageUrl}
+                      alt={randomConcerts[9]?.title}
+                      className="w-full h-full object-cover"
+                      onError={() => handleImageError(randomConcerts[9]?.id)}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    <div className="absolute bottom-2 left-2 right-2 text-white">
+                      <div className="bg-white/90 text-slate-800 px-2 py-1 rounded text-xs font-medium mb-1">
+                        {formatConcertDateShort(randomConcerts[9]?.date)}
+                      </div>
+                      <h3 className="font-semibold text-sm leading-tight line-clamp-2">
+                        {randomConcerts[9]?.title}
+                      </h3>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </a>
+          </div>
+        )}
       </div>
     </div>
   );
