@@ -89,7 +89,7 @@ export function ConcertSearch({ concerts }: ConcertSearchProps) {
             onKeyPress={handleKeyPress}
             className="flex-1"
           />
-          <Button onClick={handleSearchSubmit} className="px-6">
+          <Button onClick={handleSearchSubmit} className="px-6 hover:scale-105 transition-transform duration-200">
             Search
           </Button>
         </div>
@@ -160,10 +160,10 @@ export function ConcertSearch({ concerts }: ConcertSearchProps) {
             
             <div className="grid gap-4">
               {currentPageConcerts.map((concert, index) => (
-                <Card key={concert.id} className="bg-white border-slate-200 hover:shadow-md transition-shadow">
+                <Card key={concert.id} className="bg-white border-slate-200 hover:shadow-lg hover:scale-[1.01] hover:border-slate-300 transition-all duration-300 ease-out cursor-pointer group">
                   <CardHeader className="pb-3">
                     <div className="flex items-start justify-between">
-                      <CardTitle className="text-lg font-semibold text-slate-800 leading-tight">
+                      <CardTitle className="text-lg font-semibold text-slate-800 leading-tight group-hover:text-blue-700 transition-colors duration-200">
                         {concert.title}
                       </CardTitle>
                       <Badge variant="secondary" className="ml-2 text-xs">
@@ -202,7 +202,7 @@ export function ConcertSearch({ concerts }: ConcertSearchProps) {
                           onClick={() => handleShareClick(concert)}
                           variant="outline"
                           size="sm"
-                          className="text-xs px-2 py-1 h-7"
+                          className="text-xs px-2 py-1 h-7 hover:scale-105 transition-transform duration-200"
                         >
                           <Share2 className="w-3 h-3 mr-1" />
                           Share
@@ -212,7 +212,7 @@ export function ConcertSearch({ concerts }: ConcertSearchProps) {
                             href={concert.concertLink}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                            className="text-sm text-blue-600 hover:text-blue-800 font-medium hover:scale-105 transition-all duration-200 hover:underline"
                           >
                             Buy Tickets →
                           </a>
@@ -238,7 +238,7 @@ export function ConcertSearch({ concerts }: ConcertSearchProps) {
                   size="sm"
                   onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                   disabled={currentPage === 1}
-                  className="flex items-center gap-1"
+                  className="flex items-center gap-1 hover:scale-105 transition-transform duration-200"
                 >
                   <ChevronLeft className="w-4 h-4" />
                   Previous
@@ -251,7 +251,7 @@ export function ConcertSearch({ concerts }: ConcertSearchProps) {
                       variant={currentPage === pageNum ? "default" : "outline"}
                       size="sm"
                       onClick={() => setCurrentPage(pageNum)}
-                      className="w-10 h-10"
+                      className="w-10 h-10 hover:scale-110 transition-transform duration-200"
                     >
                       {pageNum}
                     </Button>
@@ -263,7 +263,7 @@ export function ConcertSearch({ concerts }: ConcertSearchProps) {
                   size="sm"
                   onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                   disabled={currentPage === totalPages}
-                  className="flex items-center gap-1"
+                  className="flex items-center gap-1 hover:scale-105 transition-transform duration-200"
                 >
                   Next
                   <ChevronRight className="w-4 h-4" />

@@ -40,7 +40,7 @@ export function FeaturedConcert({ concert, timeLeft }: FeaturedConcertProps) {
           </div>
         </div>
 
-        <Card className="overflow-hidden shadow-lg max-w-2xl mx-auto">
+        <Card className="overflow-hidden shadow-lg max-w-2xl mx-auto hover:shadow-xl hover:scale-[1.02] transition-all duration-300 ease-out">
           <CardContent className="p-0">
             <div className="p-8">
               <div className="text-center space-y-6">
@@ -52,7 +52,7 @@ export function FeaturedConcert({ concert, timeLeft }: FeaturedConcertProps) {
                   <img 
                     src={concert.imageUrl} 
                     alt={concert.title}
-                    className="w-full h-64 object-cover rounded-xl shadow-md mx-auto"
+                    className="w-full h-64 object-cover rounded-xl shadow-md mx-auto hover:shadow-lg transition-shadow duration-300"
                     onError={() => setImageError(true)}
                     onLoad={() => setImageError(false)}
                   />
@@ -93,7 +93,7 @@ export function FeaturedConcert({ concert, timeLeft }: FeaturedConcertProps) {
                         href={concert.concertLink} 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="text-blue-600 hover:text-blue-800 hover:underline transition-colors font-medium"
+                        className="text-blue-600 hover:text-blue-800 hover:underline transition-all duration-200 font-medium hover:scale-105"
                       >
                         Buy Tickets →
                       </a>
@@ -101,7 +101,7 @@ export function FeaturedConcert({ concert, timeLeft }: FeaturedConcertProps) {
                         onClick={() => setShowShareModal(true)}
                         variant="outline"
                         size="sm"
-                        className="flex items-center gap-1"
+                        className="flex items-center gap-1 hover:scale-105 transition-transform duration-200"
                       >
                         <Share2 className="w-4 h-4" />
                         Share
