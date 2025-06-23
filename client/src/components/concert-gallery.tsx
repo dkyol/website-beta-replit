@@ -96,7 +96,7 @@ export function ConcertGallery({ concerts }: ConcertGalleryProps) {
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-        {randomConcerts.filter(concert => !imageErrors.has(concert.id)).slice(0, 10).map((concert, index) => {
+        {randomConcerts.filter(concert => !imageErrors.has(concert.id)).slice(0, 12).map((concert, index) => {
           const hasError = imageErrors.has(concert.id);
           
           return (
