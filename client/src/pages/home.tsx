@@ -21,12 +21,7 @@ export default function Home() {
     queryKey: ["/api/concerts"],
   });
 
-  const { data: voteStats } = useQuery<{
-    [concertId: number]: { excited: number; interested: number };
-  }>({
-    queryKey: ["/api/vote-stats"],
-    refetchInterval: 2000, // Refetch every 2 seconds for real-time vote updates
-  });
+
 
   // Use all concerts for featured rotation
   const concerts = useMemo(() => {
@@ -43,10 +38,7 @@ export default function Home() {
     }
   };
 
-  const onVoteSubmitted = () => {
-    // Immediately advance to next concert after vote
-    nextConcert();
-  };
+
 
   const { timeLeft, reset: resetTimer } = useTimer(7, nextConcert);
 
@@ -84,7 +76,7 @@ export default function Home() {
                 Enjoy Classical Music!
               </h1>
               <p className="text-white font-medium">
-                Vote for your favorite artist
+                Discover amazing classical performances
               </p>
             </div>
           </div>
@@ -103,7 +95,6 @@ export default function Home() {
   }
 
   const currentConcert = concerts[currentConcertIndex];
-  const currentVoteStats = voteStats?.[currentConcert.id];
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -159,8 +150,7 @@ export default function Home() {
               Enjoy Classical Music!
             </h1>
             <p className="text-white font-medium text-lg">
-              Discover upcoming classical performances, vote for your favorites,
-              and connect with fellow music lovers
+              Discover upcoming classical performances and connect with fellow music lovers
             </p>
             <div className="mt-4 text-white/80 text-sm">
               <span>Piano Concerts</span> • <span>Chamber Music</span> •{" "}
@@ -179,9 +169,6 @@ export default function Home() {
           <FeaturedConcert
             concert={currentConcert}
             timeLeft={timeLeft}
-            voteStats={currentVoteStats}
-            onVoteSubmitted={onVoteSubmitted}
-            sessionId={sessionId}
           />
         </section>
 
@@ -193,32 +180,10 @@ export default function Home() {
           <h2 id="concert-search" className="text-2xl font-bold text-slate-800 mb-6 text-center">
             Find Your Perfect Concert
           </h2>
-          <ConcertSearch concerts={allConcerts || []} sessionId={sessionId} />
+          <ConcertSearch concerts={allConcerts || []} />
         </section>
 
-        {/* User Achievement Section */}
-        {sessionId && (
-          <section
-            aria-labelledby="user-achievements"
-            className="mb-8 bg-white rounded-lg shadow-sm border border-slate-200 p-6"
-          >
-            <h2 id="user-achievements" className="sr-only">
-              Your Music Engagement Achievements
-            </h2>
-            <UserBadges sessionId={sessionId} />
-          </section>
-        )}
 
-        {/* Concert Rankings Section */}
-        <section aria-labelledby="concert-rankings" className="mb-8">
-          <h2
-            id="concert-rankings"
-            className="text-2xl font-bold text-slate-800 mb-6 text-center"
-          >
-            Top Classical Music Events by Community Vote
-          </h2>
-          <Rankings />
-        </section>
 
         {/* SEO Content Section */}
         <section className="bg-white rounded-lg shadow-sm border border-slate-200 p-8 mb-8">
@@ -274,9 +239,9 @@ export default function Home() {
                   Community Engagement
                 </h3>
                 <p className="text-slate-600">
-                  Join our community of classical music lovers. Vote on upcoming
-                  concerts, earn achievement badges, and help create rankings
-                  that guide others to exceptional musical experiences.
+                  Join our community of classical music lovers. Discover upcoming
+                  concerts, share your favorites, and connect with others who
+                  appreciate exceptional musical experiences.
                 </p>
               </div>
             </div>

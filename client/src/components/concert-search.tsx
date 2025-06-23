@@ -1,32 +1,25 @@
 import { useState, useMemo } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
-import { Calendar, MapPin, Users, Share2, Star, ChevronLeft, ChevronRight } from "lucide-react";
+import { Calendar, MapPin, Share2, ChevronLeft, ChevronRight } from "lucide-react";
 import { SocialShare } from "@/components/social-share";
 import { formatConcertDate } from "@shared/dateUtils";
 import type { Concert } from "@shared/schema";
 
 interface ConcertSearchProps {
   concerts: Concert[];
-  sessionId?: string;
 }
 
-export function ConcertSearch({ concerts, sessionId }: ConcertSearchProps) {
+export function ConcertSearch({ concerts }: ConcertSearchProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [dateRange, setDateRange] = useState([0, 365]); // Days from today into the future
   const [submittedQuery, setSubmittedQuery] = useState("");
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [selectedConcert, setSelectedConcert] = useState<Concert | null>(null);
-  const [votedConcerts, setVotedConcerts] = useState<Set<number>>(new Set());
   const [currentPage, setCurrentPage] = useState(1);
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
 
   const RESULTS_PER_PAGE = 3;
 
