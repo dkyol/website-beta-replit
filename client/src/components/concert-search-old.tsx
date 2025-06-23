@@ -23,22 +23,93 @@ export function ConcertSearch({ concerts }: ConcertSearchProps) {
 
   const RESULTS_PER_PAGE = 3;
 
+  // Vote mutation
+  const voteMutation = useMutation({
+    mutationFn: async ({ concertId, voteType }: { concertId: number; voteType: "excited" | "interested" }) => {
+      return apiRequest("POST", "/api/vote", { concertId, voteType });
+    },
+    onSuccess: (_, { concertId }) => {
+      setVotedConcerts(prev => new Set(prev).add(concertId));
+      queryClient.invalidateQueries({ queryKey: ["/api/vote-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/rankings"] });
+      toast({
+        title: "Vote submitted!",
+        description: "Your excitement has been recorded.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Vote failed",
+        description: "Please try again.",
+        variant: "destructive"
+      });
+    }
+  });
+
+  const handleVote = (concertId: number, voteType: "excited" | "interested") => {
+    if (!sessionId) {
+      toast({
+        title: "Session required",
+        description: "Please refresh the page to enable voting.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (votedConcerts.has(concertId)) {
+      toast({
+        title: "Already voted",
+        description: "You can only vote once per concert.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    voteMutation.mutate({ concertId, voteType });
+  };
+
+  // Calculate date boundaries
+  const today = new Date();
+  const maxDate = new Date();
+  maxDate.setDate(today.getDate() + 365);
+
   const filteredConcerts = useMemo(() => {
     if (!concerts.length) return [];
 
     let filtered = concerts.filter((concert) => {
-      // Date range filter
-      const concertDate = new Date(concert.date);
-      const today = new Date();
-      const daysDiff = Math.floor((concertDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-      const matchesDate = daysDiff >= dateRange[0] && daysDiff <= dateRange[1];
-
       // Keyword search - match title, venue, or location
       const query = submittedQuery.toLowerCase();
       const matchesKeyword = !query || 
         concert.title.toLowerCase().includes(query) ||
         concert.venue.toLowerCase().includes(query) ||
         (concert.location && concert.location.toLowerCase().includes(query));
+
+      // Date filter - parse various date formats
+      let matchesDate = true; // Default to true if date parsing fails
+      try {
+        let concertDate = new Date(concert.date);
+        
+        // If invalid, try parsing specific formats
+        if (isNaN(concertDate.getTime())) {
+          // Handle formats like "Thursday, December 15, 2024 at 7:00 PM"
+          const cleanedDate = concert.date.replace(/at\s+/, '');
+          concertDate = new Date(cleanedDate);
+        }
+        
+        if (isNaN(concertDate.getTime())) {
+          // Handle formats like "Fri, Jul 18, 7:30 PM" (add current year)
+          const currentYear = new Date().getFullYear();
+          concertDate = new Date(`${concert.date} ${currentYear}`);
+        }
+        
+        if (!isNaN(concertDate.getTime())) {
+          const daysDiff = Math.ceil((concertDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+          matchesDate = daysDiff >= dateRange[0] && daysDiff <= dateRange[1];
+        }
+      } catch (error) {
+        // If date parsing fails, include the concert
+        matchesDate = true;
+      }
 
       return matchesKeyword && matchesDate;
     });
@@ -61,6 +132,8 @@ export function ConcertSearch({ concerts }: ConcertSearchProps) {
     setCurrentPage(1);
   };
 
+
+
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       handleSearchSubmit();
@@ -77,39 +150,50 @@ export function ConcertSearch({ concerts }: ConcertSearchProps) {
     setSelectedConcert(null);
   };
 
+
+
   return (
     <div className="space-y-6">
-      {/* Search Controls */}
-      <div className="space-y-4">
-        <div className="flex gap-3">
+      {/* Search Input */}
+      <div className="space-y-2">
+        <label htmlFor="concert-search" className="text-sm font-medium text-slate-700">
+          Search by title, venue, or location
+        </label>
+        <div className="flex gap-2">
           <Input
-            placeholder="Search by title, venue, or location (e.g., 'DC', 'piano', 'Kennedy Center')"
+            id="concert-search"
+            type="text"
+            placeholder="Enter keywords..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyPress={handleKeyPress}
-            className="flex-1"
+            className="bg-white border-slate-300 focus:border-slate-500 flex-1"
           />
-          <Button onClick={handleSearchSubmit} className="px-6">
+          <button
+            onClick={handleSearchSubmit}
+            className="px-4 py-2 bg-slate-600 text-white rounded-md hover:bg-slate-700 transition-colors font-medium"
+          >
             Search
-          </Button>
+          </button>
         </div>
+      </div>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-slate-700">
-            Date Range: {dateRange[0]} to {dateRange[1]} days from today
-          </label>
-          <Slider
-            value={dateRange}
-            onValueChange={setDateRange}
-            max={365}
-            min={0}
-            step={1}
-            className="w-full"
-          />
-          <div className="flex justify-between text-xs text-slate-500">
-            <span>Today</span>
-            <span>365 Days</span>
-          </div>
+      {/* Date Range Slider */}
+      <div className="space-y-4">
+        <label className="text-sm font-medium text-slate-700">
+          Date Range: {dateRange[0]} to {dateRange[1]} days from today
+        </label>
+        <Slider
+          value={dateRange}
+          onValueChange={setDateRange}
+          max={365}
+          min={0}
+          step={1}
+          className="w-full"
+        />
+        <div className="flex justify-between text-xs text-slate-500">
+          <span>Today</span>
+          <span>365 Days</span>
         </div>
       </div>
 
@@ -160,44 +244,54 @@ export function ConcertSearch({ concerts }: ConcertSearchProps) {
             
             <div className="grid gap-4">
               {currentPageConcerts.map((concert, index) => (
-                <Card key={concert.id} className="bg-white border-slate-200 hover:shadow-md transition-shadow">
-                  <CardHeader className="pb-3">
-                    <div className="flex items-start justify-between">
-                      <CardTitle className="text-lg font-semibold text-slate-800 leading-tight">
-                        {concert.title}
-                      </CardTitle>
-                      <Badge variant="secondary" className="ml-2 text-xs">
-                        #{startIndex + index + 1}
-                      </Badge>
+              <Card key={concert.id} className="bg-white border-slate-200 hover:shadow-md transition-shadow">
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between">
+                    <CardTitle className="text-lg font-semibold text-slate-800 leading-tight">
+                      {concert.title}
+                    </CardTitle>
+                    <Badge variant="secondary" className="ml-2 text-xs">
+                      #{startIndex + index + 1}
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <div className="space-y-3">
+                    <div className="flex items-center text-sm text-slate-600">
+                      <Calendar className="w-4 h-4 mr-2 text-slate-400" />
+                      {formatConcertDate(concert.date)}
                     </div>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2 text-sm text-slate-600">
-                          <Calendar className="w-4 h-4" />
-                          <span>{formatConcertDate(concert.date)}</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-slate-600">
-                          <MapPin className="w-4 h-4" />
-                          <span>{concert.venue}</span>
-                          {concert.location && (
-                            <span className="text-slate-500">• {concert.location}</span>
-                          )}
-                        </div>
-                        {concert.price && (
-                          <div className="text-sm text-slate-600">
-                            <span className="font-medium">Price:</span> {concert.price}
-                          </div>
-                        )}
-                        {concert.organizer && (
-                          <div className="text-sm text-slate-600">
-                            <span className="font-medium">Organizer:</span> {concert.organizer}
-                          </div>
-                        )}
-                      </div>
+                    
+                    <div className="flex items-center text-sm text-slate-600">
+                      <MapPin className="w-4 h-4 mr-2 text-slate-400" />
+                      {concert.venue}
+                      {concert.location && (
+                        <Badge variant="outline" className="ml-2 text-xs">
+                          {concert.location}
+                        </Badge>
+                      )}
+                    </div>
 
-                      <div className="flex items-center justify-between">
+                    <div className="flex items-center text-sm text-slate-600">
+                      <Users className="w-4 h-4 mr-2 text-slate-400" />
+                      {concert.organizer}
+                    </div>
+
+                    <div className="flex items-center justify-between pt-2">
+                      <span className="text-sm font-medium text-slate-800">
+                        {concert.price}
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          onClick={() => handleVote(concert.id, 'excited')}
+                          disabled={votedConcerts.has(concert.id) || voteMutation.isPending}
+                          variant="default"
+                          size="sm"
+                          className="text-xs px-2 py-1 h-7 bg-red-600 hover:bg-red-700 disabled:opacity-50"
+                        >
+                          <Star className="w-3 h-3 mr-1" />
+                          {votedConcerts.has(concert.id) ? 'Voted!' : 'Very Excited'}
+                        </Button>
                         <Button
                           onClick={() => handleShareClick(concert)}
                           variant="outline"
@@ -214,20 +308,21 @@ export function ConcertSearch({ concerts }: ConcertSearchProps) {
                             rel="noopener noreferrer"
                             className="text-sm text-blue-600 hover:text-blue-800 font-medium"
                           >
-                            Buy Tickets →
+                            View Details →
                           </a>
                         )}
                       </div>
-
-                      {concert.description && (
-                        <p className="text-sm text-slate-600 leading-relaxed line-clamp-2">
-                          {concert.description}
-                        </p>
-                      )}
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
+
+                    {concert.description && (
+                      <p className="text-sm text-slate-600 leading-relaxed line-clamp-2">
+                        {concert.description}
+                      </p>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
             </div>
 
             {/* Pagination Controls */}
