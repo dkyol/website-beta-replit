@@ -24,10 +24,15 @@ export default function Home() {
 
 
 
-  // Use all concerts for featured rotation
+  // Use only current and future concerts for featured rotation
   const concerts = useMemo(() => {
     if (!allConcerts) return [];
-    return allConcerts;
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()); // Start of today
+    return allConcerts.filter(concert => {
+      const concertDate = new Date(concert.date);
+      return concertDate >= today;
+    });
   }, [allConcerts]);
 
   const nextConcert = () => {

@@ -15,10 +15,12 @@ export function ConcertGallery({ concerts }: ConcertGalleryProps) {
   const randomConcerts = useMemo(() => {
     if (!concerts.length) return [];
     
-    // Filter for future concerts with real images (not placeholder images)
+    // Filter for current and future concerts with real images (not placeholder images)
     const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()); // Start of today
     const futureConcerts = concerts.filter(concert => {
-      const isFuture = new Date(concert.date) > now;
+      const concertDate = new Date(concert.date);
+      const isTodayOrFuture = concertDate >= today;
       
       // Check if concert has a real image URL
       if (!concert.imageUrl || concert.imageUrl === '') {
@@ -53,7 +55,7 @@ export function ConcertGallery({ concerts }: ConcertGalleryProps) {
          concert.imageUrl.includes('unsplash') ||
          concert.imageUrl.startsWith('http'));
       
-      return isFuture && !hasPlaceholderPattern && isValidImageUrl;
+      return isTodayOrFuture && !hasPlaceholderPattern && isValidImageUrl;
     });
     
     // Shuffle and take 10
