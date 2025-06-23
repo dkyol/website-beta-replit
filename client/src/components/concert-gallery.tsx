@@ -96,7 +96,7 @@ export function ConcertGallery({ concerts }: ConcertGalleryProps) {
       </div>
 
       <div className="relative">
-        <div className="grid grid-cols-6 gap-3" style={{ gridAutoRows: '100px' }}>
+        <div className="grid grid-cols-6 gap-3" style={{ gridAutoRows: '120px' }}>
           {randomConcerts.filter(concert => !imageErrors.has(concert.id)).slice(0, 9).map((concert, index) => {
             const hasError = imageErrors.has(concert.id);
           
@@ -172,7 +172,7 @@ export function ConcertGallery({ concerts }: ConcertGalleryProps) {
         
         {/* Large thumbnail in lower right */}
         {randomConcerts.filter(concert => !imageErrors.has(concert.id)).length > 9 && (
-          <div className="absolute bottom-0 right-0 w-48 h-32">
+          <div className="absolute bottom-0 right-0 w-56 h-36">
             <a 
               href={randomConcerts[9]?.concertLink} 
               target="_blank" 
