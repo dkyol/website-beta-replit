@@ -18,6 +18,11 @@ export default function Home() {
   const [isInitialized, setIsInitialized] = useState(false);
   const sessionId = useSession();
 
+  // Scroll to top on component mount
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const { data: allConcerts, isLoading } = useQuery<Concert[]>({
     queryKey: ["/api/concerts"],
   });
