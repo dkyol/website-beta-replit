@@ -11,15 +11,25 @@ interface ConcertGalleryProps {
 export function ConcertGallery({ concerts }: ConcertGalleryProps) {
   const [imageErrors, setImageErrors] = useState<Set<number>>(new Set());
 
-  // Get 10 random upcoming concerts
+  // Get 10 random upcoming concerts with real images
   const randomConcerts = useMemo(() => {
     if (!concerts.length) return [];
     
-    // Filter for future concerts
+    // Filter for future concerts with real images (not placeholder images)
     const now = new Date();
-    const futureConcerts = concerts.filter(concert => 
-      new Date(concert.date) > now
-    );
+    const futureConcerts = concerts.filter(concert => {
+      const isFuture = new Date(concert.date) > now;
+      const hasRealImage = concert.imageUrl && 
+        !concert.imageUrl.includes('placeholder') &&
+        !concert.imageUrl.includes('default') &&
+        !concert.imageUrl.includes('fallback') &&
+        concert.imageUrl !== '' &&
+        // Filter out common placeholder image patterns
+        !concert.imageUrl.includes('105961_RETINA_PORTRAIT_16_9') &&
+        !concert.imageUrl.includes('ef64d601-8740-43cd-86ea-ed9b392e4f7b');
+      
+      return isFuture && hasRealImage;
+    });
     
     // Shuffle and take 10
     const shuffled = [...futureConcerts].sort(() => Math.random() - 0.5);
@@ -41,7 +51,8 @@ export function ConcertGallery({ concerts }: ConcertGalleryProps) {
   if (randomConcerts.length === 0) {
     return (
       <div className="text-center py-8 text-slate-500">
-        <p>No upcoming concerts available</p>
+        <p>No upcoming concerts with images available</p>
+        <p className="text-sm mt-1">Check back soon for more featured performances</p>
       </div>
     );
   }
