@@ -180,53 +180,15 @@ def upload_concerts_from_csv(csv_file_path):
         print(f"Upload failed: {e}")
         sys.exit(1)
 
-def create_sample_csv(file_path="sample_concerts.csv"):
-    """Create a sample CSV file with the correct format"""
-    sample_data = [
-        {
-            'title': 'Sample Piano Recital',
-            'date': 'Sat, Dec 14, 8:00 PM',
-            'venue': 'Kennedy Center Concert Hall',
-            'price': 'From $25.00',
-            'organizer': 'Washington Piano Society',
-            'description': 'An evening of classical piano music featuring works by Chopin, Debussy, and Rachmaninoff.',
-            'image_url': 'https://example.com/sample-concert-image.jpg',
-            'concert_link': 'https://www.eventbrite.com/d/dc--washington/classical-concert/',
-            'location': 'DC',
-            'event_type': 'classical'
-        },
-        {
-            'title': 'Jazz Piano Night',
-            'date': 'Fri, Dec 20, 7:30 PM',
-            'venue': 'Blues Alley',
-            'price': 'From $35.00',
-            'organizer': 'DC Jazz Collective',
-            'description': 'Contemporary jazz piano performances featuring local and touring artists.',
-            'image_url': 'https://example.com/jazz-piano-image.jpg',
-            'concert_link': 'https://www.eventbrite.com/d/dc--washington/classical-concert/',
-            'location': 'DC',
-            'event_type': 'jazz'
-        }
-    ]
-    
-    with open(file_path, 'w', newline='', encoding='utf-8') as file:
-        writer = csv.DictWriter(file, fieldnames=['title', 'date', 'venue', 'price', 'organizer', 'description', 'image_url', 'concert_link', 'location', 'event_type'])
-        writer.writeheader()
-        writer.writerows(sample_data)
-    
-    print(f"Sample CSV file created: {file_path}")
 
 def main():
     if len(sys.argv) < 2:
         print("Usage: python dataUpload.py <csv_file_path>")
-        print("   or: python dataUpload.py --create-sample")
+        
         print("\nCSV Format Required:")
         print("title,date,venue,price,organizer,description,image_url")
         sys.exit(1)
-    
-    if sys.argv[1] == "--create-sample":
-        create_sample_csv()
-        return
+
     
     csv_file_path = sys.argv[1]
     upload_concerts_from_csv(csv_file_path)
