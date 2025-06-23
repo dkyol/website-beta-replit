@@ -178,7 +178,7 @@ export default function Home() {
           className="mb-8 bg-gradient-to-br from-slate-100 to-slate-200 rounded-lg shadow-sm border border-slate-300 p-8"
         >
           <h2 id="concert-search" className="text-2xl font-bold text-slate-800 mb-6 text-center">
-            Find Your Perfect Concert
+            Discover a New Artist
           </h2>
           <ConcertSearch concerts={allConcerts || []} />
         </section>
