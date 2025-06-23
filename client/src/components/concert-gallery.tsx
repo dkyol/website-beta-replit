@@ -91,7 +91,7 @@ export function ConcertGallery({ concerts }: ConcertGalleryProps) {
           Upcoming Concerts
         </h3>
         <p className="text-slate-600 text-sm">
-          Discover exciting classical performances happening soon
+         
         </p>
       </div>
 
