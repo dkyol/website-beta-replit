@@ -5,6 +5,63 @@ import { storage } from "./storage";
 import { insertVoteSchema } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  
+  // Serve concert-specific pages with dynamic meta tags
+  app.get('/concert/:id', async (req, res) => {
+    const concertId = parseInt(req.params.id);
+    const concert = await storage.getConcertById(concertId);
+    
+    if (!concert) {
+      return res.redirect('/');
+    }
+    
+    // Generate dynamic HTML with concert-specific meta tags
+    const concertHtml = `
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    
+    <title>${concert.title} | SightTune</title>
+    <meta name="description" content="${concert.description || `${concert.title} at ${concert.venue} on ${concert.date}`}" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="${req.protocol}://${req.get('host')}/concert/${concert.id}" />
+    <meta property="og:title" content="${concert.title}" />
+    <meta property="og:description" content="${concert.title} at ${concert.venue} on ${concert.date}" />
+    <meta property="og:image" content="${concert.imageUrl}" />
+    <meta property="og:site_name" content="SightTune" />
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${concert.title}" />
+    <meta name="twitter:description" content="${concert.title} at ${concert.venue} on ${concert.date}" />
+    <meta name="twitter:image" content="${concert.imageUrl}" />
+    
+    <script>
+      // Redirect to main page after meta tags are loaded
+      setTimeout(() => {
+        window.location.href = '/?concert=${concert.id}';
+      }, 1000);
+    </script>
+  </head>
+  <body>
+    <div style="display: flex; justify-content: center; align-items: center; height: 100vh; font-family: Arial, sans-serif;">
+      <div style="text-align: center;">
+        <h1>${concert.title}</h1>
+        <p>${concert.venue}</p>
+        <p>${concert.date}</p>
+        <p>Redirecting to SightTune...</p>
+      </div>
+    </div>
+  </body>
+</html>`;
+    
+    res.send(concertHtml);
+  });
+
   // Serve social media Open Graph image
   app.get("/og-image.png", (req, res) => {
     const imagePath = path.join(process.cwd(), "og-image.png");

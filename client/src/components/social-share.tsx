@@ -20,19 +20,20 @@ export function SocialShare({ concert, isOpen, onClose }: SocialShareProps) {
 
   const shareText = `🎼 Don't miss "${concert.title}" at ${concert.venue} on ${concert.date}! 🎹 
   
-Join the classical music community and vote for your favorite concerts at SightTune.`;
+Join the classical music community and discover amazing concerts at SightTune.`;
 
-  const shareUrl = "https://enjoyclassicalmusic.replit.app/";
-  const logoUrl = "https://enjoyclassicalmusic.replit.app/og-image.png";
+  const baseUrl = window.location.origin;
+  const shareUrl = `${baseUrl}/concert/${concert.id}`;
   const encodedText = encodeURIComponent(shareText);
   const encodedUrl = encodeURIComponent(shareUrl);
-  const encodedLogoUrl = encodeURIComponent(logoUrl);
+  const concertTitle = encodeURIComponent(concert.title);
+  const concertSummary = encodeURIComponent(`${concert.title} at ${concert.venue} on ${concert.date}`);
 
   const socialLinks = {
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedText}&picture=${encodedLogoUrl}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedText}`,
     twitter: `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`,
     instagram: `https://www.instagram.com/`, // Instagram doesn't support direct text sharing
-    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}&summary=${encodedText}`
+    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}&title=${concertTitle}&summary=${concertSummary}`
   };
 
   const handleShare = (platform: string) => {
