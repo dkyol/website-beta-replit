@@ -95,31 +95,14 @@ export function ConcertGallery({ concerts }: ConcertGalleryProps) {
         </p>
       </div>
 
-      <div className="relative">
-        <div className="grid grid-cols-6 gap-3" style={{ gridAutoRows: '120px' }}>
-          {randomConcerts.filter(concert => !imageErrors.has(concert.id)).slice(0, 9).map((concert, index) => {
-            const hasError = imageErrors.has(concert.id);
-          
-          // Create specific layout pattern matching the attached image
-          const layouts = [
-            "col-span-2 row-span-1", // Wide rectangle
-            "col-span-1 row-span-2", // Tall rectangle  
-            "col-span-1 row-span-2", // Tall rectangle
-            "col-span-2 row-span-1", // Wide rectangle
-            "col-span-2 row-span-1", // Wide rectangle
-            "col-span-1 row-span-2", // Tall rectangle
-            "col-span-1 row-span-1", // Small square
-            "col-span-2 row-span-1", // Wide rectangle
-            "col-span-2 row-span-1", // Wide rectangle
-            "col-span-1 row-span-1", // Small square
-          ];
-          
-          const layoutClass = layouts[index % layouts.length];
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        {randomConcerts.filter(concert => !imageErrors.has(concert.id)).slice(0, 10).map((concert, index) => {
+          const hasError = imageErrors.has(concert.id);
           
           return (
             <Card 
               key={concert.id} 
-              className={`${layoutClass} overflow-hidden hover:shadow-lg hover:scale-105 transition-all duration-300 cursor-pointer group`}
+              className="aspect-square overflow-hidden hover:shadow-lg hover:scale-105 transition-all duration-300 cursor-pointer group"
             >
               <a
                 href={concert.concertLink}
@@ -130,7 +113,6 @@ export function ConcertGallery({ concerts }: ConcertGalleryProps) {
                 <CardContent className="p-0 h-full relative">
                   <div className="relative h-full w-full">
                     {hasError ? (
-                      // Don't show fallback - skip this concert entirely by not rendering
                       <div className="hidden"></div>
                     ) : (
                       <img
@@ -142,7 +124,6 @@ export function ConcertGallery({ concerts }: ConcertGalleryProps) {
                       />
                     )}
                     
-                    {/* Overlay with date */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                       <div className="absolute bottom-0 left-0 right-0 p-3">
                         <div className="text-white">
@@ -156,7 +137,6 @@ export function ConcertGallery({ concerts }: ConcertGalleryProps) {
                       </div>
                     </div>
                     
-                    {/* Date badge - always visible */}
                     <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm rounded px-2 py-1">
                       <p className="text-xs font-medium text-slate-800">
                         {formatConcertDateShort(concert.date)}
@@ -167,42 +147,7 @@ export function ConcertGallery({ concerts }: ConcertGalleryProps) {
               </a>
             </Card>
           );
-          })}
-        </div>
-        
-        {/* Large thumbnail in lower right */}
-        {randomConcerts.filter(concert => !imageErrors.has(concert.id)).length > 9 && (
-          <div className="absolute bottom-0 right-0 w-56 h-36">
-            <a 
-              href={randomConcerts[9]?.concertLink} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="block w-full h-full group"
-            >
-              <Card className="w-full h-full overflow-hidden border-2 border-white shadow-lg hover:scale-105 transition-all duration-300 hover:shadow-xl">
-                <CardContent className="p-0 h-full relative">
-                  <div className="relative h-full w-full">
-                    <img
-                      src={randomConcerts[9]?.imageUrl}
-                      alt={randomConcerts[9]?.title}
-                      className="w-full h-full object-cover"
-                      onError={() => handleImageError(randomConcerts[9]?.id)}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                    <div className="absolute bottom-2 left-2 right-2 text-white">
-                      <div className="bg-white/90 text-slate-800 px-2 py-1 rounded text-xs font-medium mb-1">
-                        {formatConcertDateShort(randomConcerts[9]?.date)}
-                      </div>
-                      <h3 className="font-semibold text-sm leading-tight line-clamp-2">
-                        {randomConcerts[9]?.title}
-                      </h3>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </a>
-          </div>
-        )}
+        })}
       </div>
     </div>
   );
