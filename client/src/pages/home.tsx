@@ -293,7 +293,7 @@ export default function Home() {
                 </li>
                 <li>
                   <a 
-                    href="https://www.youtube.com/playlist?list=PLOLGnPgjyGmr2-3pK8HSV8MjJZvNsV_Fj" 
+                    href="https://www.youtube.com/watch?v=JTc1mDieQI8" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="hover:text-slate-800 hover:underline"
@@ -303,7 +303,7 @@ export default function Home() {
                 </li>
                 <li>
                   <a 
-                    href="https://www.youtube.com/playlist?list=PLxWdERmLQs3X1saPwH4wpkKxZ1FMRbfIg" 
+                    href="https://www.youtube.com/watch?v=rOjHhS5MtvA" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="hover:text-slate-800 hover:underline"
@@ -313,7 +313,7 @@ export default function Home() {
                 </li>
                 <li>
                   <a 
-                    href="https://www.youtube.com/playlist?list=PLZ6RzHn4e5c6TFhN3S4TofNGfVZg4o15e" 
+                    href="https://www.youtube.com/watch?v=6HV_4QrJbOs" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="hover:text-slate-800 hover:underline"
@@ -323,7 +323,7 @@ export default function Home() {
                 </li>
                 <li>
                   <a 
-                    href="https://www.youtube.com/playlist?list=PLK8SXnKL8T8N6kLJwxnlbTGQ0w0XW-pNn" 
+                    href="https://www.youtube.com/watch?v=1prweT95Mo0" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="hover:text-slate-800 hover:underline"
