@@ -22,9 +22,6 @@ export class DatabaseStorage implements IStorage {
 
   constructor() {
     this.previousRanks = new Map();
-    
-    // Initialize with real DC piano concert data if tables are empty
-    this.initializeConcerts().catch(console.error);
   }
 
   private async initializeConcerts() {
