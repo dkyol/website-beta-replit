@@ -1,33 +1,40 @@
-# Enjoy Classical Music
+# SightTune - Classical Music Discovery Platform
 
 ## Overview
-An interactive voting application for piano concerts featuring automatic 30-second rotations, real-time ranking displays, and persistent data storage. Users can vote on their favorite upcoming piano performances in the Washington DC area.
+An intelligent classical music concert discovery platform that simplifies live music exploration through dynamic, user-focused design and advanced event aggregation. The application features a comprehensive database of authentic classical concerts with social sharing capabilities and educational resources.
 
 ## Features
-- **Real-time Voting**: Vote "Very Excited" or "Somewhat Interested" on featured concerts
-- **30-Second Rotation**: Automatically cycles through different concerts every 30 seconds
-- **Live Rankings**: Real-time rankings with position change tracking
-- **Persistent Database**: All votes and concert data stored in PostgreSQL
-- **Authentic Data**: Real concert data from DC area venues with original Eventbrite images
-- **Responsive Design**: Beautiful gradient banner with smooth animations
+- **Concert Discovery**: Browse 580+ authentic classical concerts with real promotional images
+- **30-Second Rotation**: Automatically cycles through featured concerts every 30 seconds
+- **Future-Only Display**: Shows only upcoming concerts happening today and later
+- **Concert Gallery**: Responsive grid layout showcasing 12 concerts with square thumbnails
+- **Social Sharing**: Concert-specific sharing with dynamic Open Graph meta tags for Facebook, LinkedIn, and Twitter
+- **Educational Links**: Wikipedia integration for music genres and concert venue types
+- **YouTube Examples**: Direct links to classical music performance examples
+- **External Resources**: Links to concert reviews, artist profiles, and concert calendars
+- **Responsive Design**: Mobile-optimized with 2-5 column grid layouts
 
 ## Technology Stack
 
-### Backend (Python Flask)
-- **Flask**: Web framework for Python
-- **PostgreSQL**: Persistent database storage
-- **Psycopg2**: PostgreSQL database adapter
-- **Flask-CORS**: Cross-origin resource sharing
-- **Pydantic**: Data validation and serialization
+### Backend (Node.js/TypeScript)
+- **Express**: Web framework with TypeScript
+- **PostgreSQL**: Persistent database with 580+ concert records
+- **Drizzle ORM**: Type-safe database operations and schema management
+- **Dynamic Meta Tags**: Concert-specific Open Graph tags for social sharing
 
 ### Frontend (React)
-- **React 18**: UI framework
-- **TypeScript**: Type safety
-- **Vite**: Build tool and development server
-- **TailwindCSS**: Styling framework
-- **Framer Motion**: Animations
-- **TanStack Query**: Data fetching and caching
-- **Wouter**: Lightweight routing
+- **React 18**: Modern UI framework with TypeScript
+- **Vite**: Fast build tool with hot module replacement
+- **TailwindCSS**: Utility-first styling with responsive design
+- **TanStack Query**: Data fetching with 5-second auto-refresh
+- **Wouter**: Lightweight client-side routing
+- **Radix UI**: Accessible component primitives
+
+### Data Sources & Integration
+- **Eventbrite Scraping**: Authentic concert data with promotional images
+- **Wikipedia Integration**: Educational links for music genres and venues
+- **YouTube Integration**: Example performance videos
+- **External Resources**: Classical music websites and calendars
 
 ## Installation
 

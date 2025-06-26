@@ -94,7 +94,20 @@ The application follows a modern full-stack architecture with clear separation b
 
 ## Changelog
 
-- June 26, 2025. Initial setup
+### June 26, 2025
+- Initial setup with voting functionality
+
+### Recent Updates (June 2025)
+- **Database Expansion**: Added 580+ authentic concerts from Eventbrite with real promotional images
+- **Social Sharing Enhancement**: Implemented concert-specific URLs with dynamic Open Graph meta tags
+- **Educational Integration**: Added Wikipedia links for music genres and venue types
+- **YouTube Integration**: Added direct links to classical performance examples
+- **External Resources**: Connected to professional concert review sites and artist databases
+- **Image Quality Control**: Implemented filtering to exclude placeholder/generic images
+- **Responsive Design**: Updated to square thumbnails with mobile-optimized grid layouts
+- **Geographic Expansion**: Changed from DC-focused to global classical music events
+- **Future-Only Display**: Modified to show only upcoming concerts (today and later)
+- **Meta Tag Updates**: Enhanced social media preview images and descriptions
 
 ## User Preferences
 
