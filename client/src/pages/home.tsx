@@ -338,27 +338,52 @@ export default function Home() {
               <h4 className="text-lg font-semibold mb-4">Concert Venues</h4>
               <ul className="space-y-2 text-sm text-slate-600">
                 <li>
-                  <a href="#" className="hover:text-slate-800">
+                  <a 
+                    href="https://en.wikipedia.org/wiki/Concert_hall" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="hover:text-slate-800 hover:underline"
+                  >
                     Concert Halls
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-slate-800">
+                  <a 
+                    href="https://en.wikipedia.org/wiki/Music_school" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="hover:text-slate-800 hover:underline"
+                  >
                     Music Conservatories
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-slate-800">
+                  <a 
+                    href="https://en.wikipedia.org/wiki/University_performance_hall" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="hover:text-slate-800 hover:underline"
+                  >
                     University Venues
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-slate-800">
+                  <a 
+                    href="https://en.wikipedia.org/wiki/Community_centre" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="hover:text-slate-800 hover:underline"
+                  >
                     Community Centers
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-slate-800">
+                  <a 
+                    href="https://en.wikipedia.org/wiki/Outdoor_concert" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="hover:text-slate-800 hover:underline"
+                  >
                     Outdoor Venues
                   </a>
                 </li>
