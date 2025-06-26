@@ -450,27 +450,50 @@ export default function Home() {
               <h4 className="text-lg font-semibold mb-4">Community</h4>
               <ul className="space-y-2 text-sm text-slate-600">
                 <li>
-                  <a href="#" className="hover:text-slate-800">
+                  <a 
+                    href="https://www.classicalsource.com/concert-reviews/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="hover:text-slate-800 hover:underline"
+                  >
                     Concert Reviews
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-slate-800">
+                  <a 
+                    href="https://www.classicalmusicartists.com/cma/artists.aspx" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="hover:text-slate-800 hover:underline"
+                  >
                     Artist Profiles
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-slate-800">
+                  <a 
+                    href="https://www.allclassical.org/events/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="hover:text-slate-800 hover:underline"
+                  >
                     Concert Calendar
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-slate-800">
+                  <a 
+                    href="https://en.wikipedia.org/wiki/Music_education" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="hover:text-slate-800 hover:underline"
+                  >
                     Music Education
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-slate-800">
+                  <a 
+                    href="mailto:info@sighttune.com?subject=Subscribe to Updates&body=Hi, I would like to subscribe to SightTune updates and notifications about new classical music concerts." 
+                    className="hover:text-slate-800 hover:underline"
+                  >
                     Subscribe to Updates
                   </a>
                 </li>
