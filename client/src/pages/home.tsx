@@ -282,27 +282,52 @@ export default function Home() {
               <h4 className="text-lg font-semibold mb-4">Classical Concerts</h4>
               <ul className="space-y-2 text-sm text-slate-600">
                 <li>
-                  <a href="#" className="hover:text-slate-800">
+                  <a 
+                    href="https://www.youtube.com/playlist?list=PLBjoEdEVMABLKzpMqti_pyCt2dS5kYiqD" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="hover:text-slate-800 hover:underline"
+                  >
                     Piano Recitals
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-slate-800">
+                  <a 
+                    href="https://www.youtube.com/playlist?list=PLOLGnPgjyGmr2-3pK8HSV8MjJZvNsV_Fj" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="hover:text-slate-800 hover:underline"
+                  >
                     Chamber Music
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-slate-800">
+                  <a 
+                    href="https://www.youtube.com/playlist?list=PLxWdERmLQs3X1saPwH4wpkKxZ1FMRbfIg" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="hover:text-slate-800 hover:underline"
+                  >
                     Orchestra Concerts
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-slate-800">
+                  <a 
+                    href="https://www.youtube.com/playlist?list=PLZ6RzHn4e5c6TFhN3S4TofNGfVZg4o15e" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="hover:text-slate-800 hover:underline"
+                  >
                     Violin Performances
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-slate-800">
+                  <a 
+                    href="https://www.youtube.com/playlist?list=PLK8SXnKL8T8N6kLJwxnlbTGQ0w0XW-pNn" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="hover:text-slate-800 hover:underline"
+                  >
                     Cello Recitals
                   </a>
                 </li>
