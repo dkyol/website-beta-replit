@@ -344,27 +344,52 @@ export default function Home() {
               <h4 className="text-lg font-semibold mb-4">Music Genres</h4>
               <ul className="space-y-2 text-sm text-slate-600">
                 <li>
-                  <a href="#" className="hover:text-slate-800">
+                  <a 
+                    href="https://en.wikipedia.org/wiki/Baroque_music" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="hover:text-slate-800 hover:underline"
+                  >
                     Baroque Music
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-slate-800">
+                  <a 
+                    href="https://en.wikipedia.org/wiki/Romantic_music" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="hover:text-slate-800 hover:underline"
+                  >
                     Romantic Period
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-slate-800">
+                  <a 
+                    href="https://en.wikipedia.org/wiki/Contemporary_classical_music" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="hover:text-slate-800 hover:underline"
+                  >
                     Contemporary Classical
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-slate-800">
+                  <a 
+                    href="https://en.wikipedia.org/wiki/Contemporary_classical_music" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="hover:text-slate-800 hover:underline"
+                  >
                     Modern Compositions
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-slate-800">
+                  <a 
+                    href="https://en.wikipedia.org/wiki/Third_stream" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="hover:text-slate-800 hover:underline"
+                  >
                     Jazz Classical Fusion
                   </a>
                 </li>
