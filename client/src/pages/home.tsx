@@ -10,7 +10,7 @@ import { useSession } from "@/hooks/use-session";
 import { filterFutureConcerts } from "@/lib/dateUtils";
 import type { Concert } from "@shared/schema";
 import bannerImage from "@assets/Screenshot 2025-06-12 232843_1749785388266.png";
-import sightTuneLogo from "@assets/SightTune_Logo_no words_1749825929879.png";
+import sightTuneLogo from "@assets/logoRemod_1750993466008.png";
 
 export default function Home() {
   const [currentConcertIndex, setCurrentConcertIndex] = useState(0);

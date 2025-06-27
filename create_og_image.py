@@ -16,7 +16,7 @@ def create_og_image():
     
     # Try to open and use the actual SightTune logo
     try:
-        logo_path = "attached_assets/SightTune_Logo_no words_1749825929879.png"
+        logo_path = "attached_assets/logoRemod_1750993466008.png"
         logo = Image.open(logo_path)
         
         # Resize logo to fit nicely in the social media image
