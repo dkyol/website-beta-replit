@@ -10,8 +10,8 @@ def create_og_image():
     # Create a 1200x630 image (standard Open Graph size)
     width, height = 1200, 630
     
-    # Create image with dark background
-    bg_color = (26, 26, 26)  # Dark gray
+    # Create image with elegant background
+    bg_color = (248, 250, 252)  # Light gray/white
     img = Image.new('RGB', (width, height), bg_color)
     
     # Try to open and use the actual SightTune logo
@@ -20,12 +20,12 @@ def create_og_image():
         logo = Image.open(logo_path)
         
         # Resize logo to fit nicely in the social media image
-        logo_max_size = 200
+        logo_max_size = 300
         logo.thumbnail((logo_max_size, logo_max_size), Image.Resampling.LANCZOS)
         
         # Calculate position to center the logo
         logo_x = (width - logo.width) // 2
-        logo_y = (height - logo.height) // 2 - 80
+        logo_y = (height - logo.height) // 2 - 50
         
         # If the logo has transparency, paste it properly
         if logo.mode in ('RGBA', 'LA'):
@@ -43,8 +43,8 @@ def create_og_image():
     draw = ImageDraw.Draw(img)
     
     # Colors
-    white = (255, 255, 255)
-    light_gray = (204, 204, 204)
+    dark_text = (30, 41, 59)  # Dark slate
+    light_text = (100, 116, 139)  # Light slate
     
     # Add text
     try:
@@ -62,15 +62,15 @@ def create_og_image():
     title_width = title_bbox[2] - title_bbox[0]
     title_x = (width - title_width) // 2
     title_y = center_y_text
-    draw.text((title_x, title_y), title_text, fill=white, font=title_font)
+    draw.text((title_x, title_y), title_text, fill=dark_text, font=title_font)
     
     # Subtitle
-    subtitle_text = "Classical Music Discovery"
+    subtitle_text = "Music Technology"
     subtitle_bbox = draw.textbbox((0, 0), subtitle_text, font=subtitle_font)
     subtitle_width = subtitle_bbox[2] - subtitle_bbox[0]
     subtitle_x = (width - subtitle_width) // 2
     subtitle_y = title_y + 90
-    draw.text((subtitle_x, subtitle_y), subtitle_text, fill=light_gray, font=subtitle_font)
+    draw.text((subtitle_x, subtitle_y), subtitle_text, fill=light_text, font=subtitle_font)
     
     # Save the image
     img.save('og-image.png', 'PNG', quality=95)
