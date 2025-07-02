@@ -1,8 +1,13 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import path from "path";
+import { exec } from "child_process";
+import { promisify } from "util";
+import fs from "fs";
 import { storage } from "./storage";
 import { insertVoteSchema } from "@shared/schema";
+
+const execAsync = promisify(exec);
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
@@ -182,6 +187,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(badgesInfo);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch available badges" });
+    }
+  });
+
+  // Generate Instagram post image
+  app.post("/api/generate-instagram-post", async (req, res) => {
+    try {
+      const { concertId } = req.body;
+      
+      if (!concertId) {
+        return res.status(400).json({ error: "Concert ID is required" });
+      }
+
+      // Get concert data
+      const concert = await storage.getConcertById(concertId);
+      if (!concert) {
+        return res.status(404).json({ error: "Concert not found" });
+      }
+
+      // Create filename with timestamp
+      const timestamp = Date.now();
+      const filename = `instagram_post_${concertId}_${timestamp}.png`;
+      const outputPath = path.join(process.cwd(), 'client', 'public', filename);
+
+      // Prepare concert data for Python script
+      const concertData = JSON.stringify({
+        title: concert.title,
+        venue: concert.venue,
+        date: concert.date,
+        price: concert.price,
+        imageUrl: concert.imageUrl
+      });
+
+      // Execute Python script to generate Instagram post
+      const command = `cd ${process.cwd()} && python create_instagram_post.py '${concertData}' '${outputPath}'`;
+      
+      await execAsync(command);
+
+      // Check if file was created
+      if (fs.existsSync(outputPath)) {
+        res.json({ 
+          success: true, 
+          filename: filename,
+          url: `/${filename}`,
+          message: "Instagram post image generated successfully"
+        });
+      } else {
+        res.status(500).json({ error: "Failed to generate image" });
+      }
+    } catch (error: any) {
+      console.error('Instagram post generation error:', error);
+      res.status(500).json({ error: "Failed to generate Instagram post image" });
     }
   });
 

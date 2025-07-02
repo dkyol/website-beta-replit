@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Share2, Facebook, Twitter, Instagram, Copy, Check } from "lucide-react";
+import { Share2, Facebook, Twitter, Instagram, Copy, Check, Download, Loader2 } from "lucide-react";
 import sightTuneLogo from "@assets/logoRemod_1750993466008.png";
 import type { Concert } from "@shared/schema";
 
@@ -14,6 +14,7 @@ interface SocialShareProps {
 
 export function SocialShare({ concert, isOpen, onClose }: SocialShareProps) {
   const [copied, setCopied] = useState(false);
+  const [isGeneratingInstagram, setIsGeneratingInstagram] = useState(false);
   const { toast } = useToast();
 
   if (!isOpen) return null;
@@ -36,12 +37,53 @@ Join the classical music community and discover amazing concerts at SightTune.`;
     linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}&title=${concertTitle}&summary=${concertSummary}`
   };
 
+  const handleInstagramShare = async () => {
+    if (isGeneratingInstagram) return;
+    
+    setIsGeneratingInstagram(true);
+    
+    try {
+      const response = await fetch('/api/generate-instagram-post', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ concertId: concert.id }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        // Create download link for the generated image
+        const link = document.createElement('a');
+        link.href = data.url;
+        link.download = `${concert.title.substring(0, 30)}_instagram_post.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        toast({
+          title: "Instagram Post Ready!",
+          description: "Your custom concert image has been downloaded. Share it on Instagram!",
+        });
+      } else {
+        throw new Error(data.error || 'Failed to generate Instagram post');
+      }
+    } catch (error: any) {
+      console.error('Instagram generation error:', error);
+      toast({
+        title: "Generation Failed",
+        description: "Unable to create Instagram post. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsGeneratingInstagram(false);
+    }
+  };
+
   const handleShare = (platform: string) => {
     if (platform === 'instagram') {
-      toast({
-        title: "Instagram Sharing",
-        description: "Please share manually on Instagram by copying the text below.",
-      });
+      handleInstagramShare();
       return;
     }
 
@@ -91,7 +133,7 @@ Join the classical music community and discover amazing concerts at SightTune.`;
               <h4 className="font-medium text-sm mb-2">Concert Details:</h4>
               <p className="text-sm text-slate-600">
                 <strong>{concert.title}</strong><br />
-                {concert.venue} • {concert.date}<br />
+                {concert.venue} • {new Date(concert.date).toLocaleDateString()}<br />
                 Price: {concert.price}
               </p>
             </div>
@@ -128,11 +170,16 @@ Join the classical music community and discover amazing concerts at SightTune.`;
                 
                 <Button
                   onClick={() => handleShare('instagram')}
-                  className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                  disabled={isGeneratingInstagram}
+                  className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:opacity-50"
                   size="sm"
                 >
-                  <Instagram className="w-4 h-4" />
-                  Instagram
+                  {isGeneratingInstagram ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Instagram className="w-4 h-4" />
+                  )}
+                  {isGeneratingInstagram ? "Creating..." : "Instagram"}
                 </Button>
               </div>
             </div>
