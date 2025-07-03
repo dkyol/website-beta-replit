@@ -229,7 +229,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         res.json({ 
           success: true, 
           filename: filename,
-          url: `/${filename}`,
+          url: `/api/image/${filename}`,
           message: "Instagram post image generated successfully"
         });
       } else {
@@ -238,6 +238,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error('Instagram post generation error:', error);
       res.status(500).json({ error: "Failed to generate Instagram post image" });
+    }
+  });
+
+  // Serve generated images with proper headers for iPhone compatibility
+  app.get("/api/image/:filename", (req, res) => {
+    try {
+      const filename = req.params.filename;
+      const imagePath = path.join(process.cwd(), 'client', 'public', filename);
+      
+      if (!fs.existsSync(imagePath)) {
+        return res.status(404).json({ error: "Image not found" });
+      }
+
+      // Set proper headers for iPhone compatibility
+      res.setHeader('Content-Type', 'image/jpeg');
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Access-Control-Allow-Methods', 'GET');
+      res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+      // Stream the file
+      const fileStream = fs.createReadStream(imagePath);
+      fileStream.pipe(res);
+      
+      fileStream.on('error', (error) => {
+        console.error('Error streaming image:', error);
+        res.status(500).json({ error: "Error serving image" });
+      });
+      
+    } catch (error) {
+      console.error('Image serving error:', error);
+      res.status(500).json({ error: "Failed to serve image" });
     }
   });
 

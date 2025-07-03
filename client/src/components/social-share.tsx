@@ -54,18 +54,30 @@ Join the classical music community and discover amazing concerts at SightTune.`;
       const data = await response.json();
       
       if (data.success) {
-        // Create download link for the generated image
-        const link = document.createElement('a');
-        link.href = data.url;
-        link.download = `${concert.title.substring(0, 30)}_instagram_post.jpg`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        // Detect if user is on iOS/iPhone
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
         
-        toast({
-          title: "Instagram Post Ready!",
-          description: "Your custom concert image has been downloaded. Share it on Instagram!",
-        });
+        if (isIOS) {
+          // For iOS devices, open image in new tab for manual save
+          window.open(data.url, '_blank');
+          toast({
+            title: "Instagram Post Ready!",
+            description: "Image opened in new tab. Press and hold to save to Photos, then share on Instagram!",
+          });
+        } else {
+          // For other devices, use download link
+          const link = document.createElement('a');
+          link.href = data.url;
+          link.download = `${concert.title.substring(0, 30)}_instagram_post.jpg`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          
+          toast({
+            title: "Instagram Post Ready!",
+            description: "Your custom concert image has been downloaded. Share it on Instagram!",
+          });
+        }
       } else {
         throw new Error(data.error || 'Failed to generate Instagram post');
       }

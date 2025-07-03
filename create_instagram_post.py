@@ -186,14 +186,22 @@ def create_instagram_post(concert_data, output_filename="instagram_post.jpg"):
     except Exception as e:
         print(f"Error adding logo: {e}")
     
-    # Save the image as JPEG with high quality
+    # Save the image as JPEG with high quality and iOS compatibility
     # Convert RGBA to RGB for JPEG compatibility
     if img.mode == 'RGBA':
         background = Image.new('RGB', img.size, (255, 255, 255))
         background.paste(img, mask=img.split()[-1])
         img = background
+    elif img.mode != 'RGB':
+        img = img.convert('RGB')
     
-    img.save(output_filename, 'JPEG', quality=95, optimize=True)
+    # Save with optimized settings for maximum compatibility
+    img.save(output_filename, 'JPEG', 
+             quality=95, 
+             optimize=True, 
+             progressive=False,  # Better for iOS compatibility
+             subsampling=0,      # Highest quality subsampling
+             qtables='web_high') # Web-optimized quantization tables
     print(f"Created Instagram post: {output_filename}")
     return output_filename
 
