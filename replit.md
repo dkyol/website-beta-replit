@@ -100,7 +100,7 @@ The application follows a modern full-stack architecture with clear separation b
 ### Recent Updates (June 2025)
 - **Database Expansion**: Added 580+ authentic concerts from Eventbrite with real promotional images
 - **Social Sharing Enhancement**: Implemented concert-specific URLs with dynamic Open Graph meta tags
-- **Instagram Post Generator**: Custom image creation for Instagram sharing with concert thumbnails and branding
+- **Instagram Post Generator**: Custom JPEG image creation for Instagram sharing with concert thumbnails and branding
 - **Logo Rebranding**: Updated all social media assets to use new SightTune Music Technology logo
 - **Educational Integration**: Added Wikipedia links for music genres and venue types
 - **YouTube Integration**: Added direct links to classical performance examples

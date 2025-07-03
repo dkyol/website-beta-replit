@@ -57,7 +57,7 @@ Join the classical music community and discover amazing concerts at SightTune.`;
         // Create download link for the generated image
         const link = document.createElement('a');
         link.href = data.url;
-        link.download = `${concert.title.substring(0, 30)}_instagram_post.png`;
+        link.download = `${concert.title.substring(0, 30)}_instagram_post.jpg`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);

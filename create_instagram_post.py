@@ -10,7 +10,7 @@ import os
 import json
 import sys
 
-def create_instagram_post(concert_data, output_filename="instagram_post.png"):
+def create_instagram_post(concert_data, output_filename="instagram_post.jpg"):
     """
     Create an Instagram-style post image with concert thumbnail and information
     
@@ -186,8 +186,14 @@ def create_instagram_post(concert_data, output_filename="instagram_post.png"):
     except Exception as e:
         print(f"Error adding logo: {e}")
     
-    # Save the image
-    img.save(output_filename, 'PNG', quality=95)
+    # Save the image as JPEG with high quality
+    # Convert RGBA to RGB for JPEG compatibility
+    if img.mode == 'RGBA':
+        background = Image.new('RGB', img.size, (255, 255, 255))
+        background.paste(img, mask=img.split()[-1])
+        img = background
+    
+    img.save(output_filename, 'JPEG', quality=95, optimize=True)
     print(f"Created Instagram post: {output_filename}")
     return output_filename
 
@@ -223,7 +229,7 @@ def main():
         # Read concert data from command line argument (JSON string)
         try:
             concert_data = json.loads(sys.argv[1])
-            output_file = sys.argv[2] if len(sys.argv) > 2 else "instagram_post.png"
+            output_file = sys.argv[2] if len(sys.argv) > 2 else "instagram_post.jpg"
             create_instagram_post(concert_data, output_file)
         except json.JSONDecodeError:
             print("Error: Invalid JSON data provided")

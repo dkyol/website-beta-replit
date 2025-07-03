@@ -207,7 +207,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Create filename with timestamp
       const timestamp = Date.now();
-      const filename = `instagram_post_${concertId}_${timestamp}.png`;
+      const filename = `instagram_post_${concertId}_${timestamp}.jpg`;
       const outputPath = path.join(process.cwd(), 'client', 'public', filename);
 
       // Prepare concert data for Python script
